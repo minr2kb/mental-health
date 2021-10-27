@@ -1,38 +1,82 @@
 .App {
-  text-align: center;
+	/* margin-top: 7vh; */
+	text-align: center;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.button-submit {
+	font-size: medium;
+	padding-top: 0.5rem;
+	padding-bottom: 0.5rem;
+	padding-left: 2rem;
+	padding-right: 2rem;
+	margin-left: 1rem;
+	border: 2px solid white;
+	border-radius: 10px;
+	background-color: rgba(255, 255, 255, 0.1);
+	cursor: pointer;
+	font-weight: 500;
+	transition: all 0.07s ease-out;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.button-submit:hover {
+	background-color: white;
+	color: #282c34;
+	font-weight: 600;
+	transition: all 0.07s ease-out;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+.input-field {
+	background: transparent;
+	border: none;
+	border-bottom: 1px solid darkgray;
+	outline: none;
+	padding: 8px;
+	font-size: large;
+	color: white;
+	width: 30vw;
+	transition: all 0.07s ease-out;
 }
 
-.App-link {
-  color: #61dafb;
+.input-field:focus {
+	border-color: white;
+	transition: all 0.07s ease-out;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.chat-box {
+	width: 60vw;
+	margin-top: 10px;
+	text-align: start;
+	border: solid 1px rgba(61, 61, 61, 0.2);
+	box-shadow: rgba(138, 138, 138, 0.1) -3px 3px 10px 5px;
+	border-radius: 8px;
+	padding: 10px;
+}
+
+.input {
+	padding-top: 5px;
+	padding-bottom: 5px;
+	background: none;
+	font-size: large;
+	width: 50%;
+	border: none;
+	border-bottom: 2px solid rgb(193, 193, 193);
+	transition: all 0.3s ease;
+	-webkit-transition: all 0.3s ease;
+	-moz-transition: all 0.3s ease;
+	-ms-transition: all 0.3s ease;
+	-o-transition: all 0.3s ease;
+}
+
+.input:focus {
+	border-color: rgb(35, 196, 144);
+	/* width: 13rem; */
+	outline: none;
+	transition: all 0.3s ease;
+	-webkit-transition: all 0.3s ease;
+	-moz-transition: all 0.3s ease;
+	-ms-transition: all 0.3s ease;
+	-o-transition: all 0.3s ease;
 }
