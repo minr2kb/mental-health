@@ -1,12 +1,15 @@
-import { useEffect, useState, forwardRef, useRef } from "react";
+import { useEffect, useState } from "react";
 import "../App.css";
 import { getAuth } from "firebase/auth";
 import { Link, useHistory } from "react-router-dom";
 import { AiOutlineArrowLeft } from "react-icons/ai";
-import { collection, addDoc } from "firebase/firestore";
+import { useRecoilState } from "recoil";
+import { postsState } from "../recoilStates";
+import { doc, updateDoc } from "firebase/firestore";
 import { db } from "./firebase";
 
-const Write = () => {
+const Edit = ({ match }) => {
+	const { id } = match.params;
 	const auth = getAuth();
 	let history = useHistory();
 	const [windowDimensions, setWindowDimensions] = useState({
@@ -17,6 +20,8 @@ const Write = () => {
 	const [title, setTitle] = useState("");
 	const [stuID, setStuID] = useState("");
 	const [text, setText] = useState("");
+
+	const [posts, setPosts] = useRecoilState(postsState);
 
 	function getWindowDimensions() {
 		const { innerWidth: width, innerHeight: height } = window;
@@ -36,32 +41,26 @@ const Write = () => {
 		setText(e.target.value);
 	};
 
-	const createPost = async () => {
-		try {
-			const docRef = await addDoc(collection(db, "posts"), {
-				user: auth.currentUser.email,
-				username: auth.currentUser.displayName,
-				studentid: stuID,
-				title: title,
-				content: text,
-				like: 0,
-				likedusers: [],
-				timestamp: new Date().toDateString(),
-				created: new Date(),
-			});
-
-			window.alert("Posted!");
-			history.push("/posts");
-			console.log("Document written with ID: ", docRef.id);
-		} catch (e) {
-			console.error("Error adding document: ", e);
-		}
+	const updatePost = async () => {
+		updateDoc(doc(db, "posts", id), {
+			content: text,
+			studentid: stuID,
+			title: title,
+			timestamp: new Date().toDateString(),
+			created: new Date(),
+		}).then(resp => {
+			window.alert("Saved all changes!");
+			history.push("/");
+		});
 	};
 
 	useEffect(() => {
 		if (auth.currentUser?.email == undefined) {
 			history.push("/posts");
 		}
+		setTitle(posts[id].title);
+		setStuID(posts[id].studentid);
+		setText(posts[id].content);
 		setWindowDimensions(getWindowDimensions());
 		function handleResize() {
 			setWindowDimensions(getWindowDimensions());
@@ -92,7 +91,7 @@ const Write = () => {
 					marginTop: "2vh",
 				}}
 			>
-				<Link to="/posts">
+				<Link to={`/posts/${id}`}>
 					<AiOutlineArrowLeft style={{ padding: "10px" }} size={20} />
 				</Link>
 				<div
@@ -191,9 +190,9 @@ const Write = () => {
 							backgroundColor: "rgb(35,196,144)",
 							color: "white",
 						}}
-						onClick={createPost}
+						onClick={updatePost}
 					>
-						Submit
+						Save
 					</div>
 				</div>
 			</div>
@@ -201,4 +200,4 @@ const Write = () => {
 	);
 };
 
-export default Write;
+export default Edit;

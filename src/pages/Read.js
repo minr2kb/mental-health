@@ -1,64 +1,35 @@
-import { useEffect, useState, forwardRef, useRef } from "react";
+import { useEffect, useState } from "react";
 import "../App.css";
-
-import Pagination from "react-js-pagination";
-import HashLoader from "react-spinners/HashLoader";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
+import { useRecoilState } from "recoil";
+import { postsState } from "../recoilStates";
 import {
 	AiOutlineArrowLeft,
 	AiOutlineHeart,
 	AiFillHeart,
 	AiOutlineDelete,
+	AiOutlineEdit,
 } from "react-icons/ai";
+import { getAuth } from "firebase/auth";
 import {
-	getAuth,
-	signInWithPopup,
-	GoogleAuthProvider,
-	signOut,
-	signInWithRedirect,
-	getRedirectResult,
-} from "firebase/auth";
-
-const samples = {
-	1: {
-		title: "Test용1",
-		content: "이것은 테스트용 글 쓰기1",
-		user: "Kyungbae Min",
-		like: 1,
-		timestamp: new Date().toDateString(),
-	},
-	2: {
-		title: "Test용2",
-		content: "이것은 테스트용 글 쓰기2",
-		user: "Kyungbae Min",
-		like: 2,
-		timestamp: new Date().toDateString(),
-	},
-	3: {
-		title: "Test용3",
-		content: "이것은 테스트용 글 쓰기3",
-		user: "Kyungbae Min",
-		like: 3,
-		timestamp: new Date().toDateString(),
-	},
-	4: {
-		title: "시험을 보기가 너무 싫고 종강 얼른 했으면 좋겠어요",
-		content:
-			"이것은 테스트용 글 쓰기4 sdfgsfgsf sfdg dfg efagfgsfd gdfg sfg sfgasg sfgsdf fgsddfsggs d gdfsg gfd gfgf gsdf gsg dsdg sdfgsd f fdhfds sdh gdsh sgdhd fg ",
-		user: "kyungbae.min@stonybrook.edu",
-		like: 4,
-		timestamp: new Date().toDateString(),
-	},
-};
+	doc,
+	updateDoc,
+	increment,
+	arrayUnion,
+	arrayRemove,
+	deleteDoc,
+} from "firebase/firestore";
+import { db } from "./firebase";
 
 const Read = ({ match }) => {
 	const { id } = match.params;
 	const auth = getAuth();
+	let history = useHistory();
 	const [windowDimensions, setWindowDimensions] = useState({
 		width: 500,
 		height: 500,
 	});
-	const [posts, setPosts] = useState(samples);
+	const [posts, setPosts] = useRecoilState(postsState);
 	const [liked, setLiked] = useState(false);
 
 	function getWindowDimensions() {
@@ -70,13 +41,40 @@ const Read = ({ match }) => {
 	}
 
 	const like = () => {
-		setLiked(true);
+		if (auth.currentUser?.email == undefined) {
+			window.alert(
+				"You have to sign-in in order to click the like buttons."
+			);
+		} else {
+			updateDoc(doc(db, "posts", id), {
+				like: increment(1),
+				likedusers: arrayUnion(auth.currentUser?.email),
+			}).then(resp => setLiked(true));
+		}
 	};
+
 	const dislike = () => {
-		setLiked(false);
+		updateDoc(doc(db, "posts", id), {
+			like: increment(-1),
+			likedusers: arrayRemove(auth.currentUser?.email),
+		}).then(resp => setLiked(false));
+	};
+
+	const deletePost = () => {
+		if (window.confirm("Do you really want to delete this post?")) {
+			deleteDoc(doc(db, "posts", id)).then(resp => {
+				history.push("/");
+			});
+		}
 	};
 
 	useEffect(() => {
+		if (
+			posts[id].likedusers.filter(user => user == auth.currentUser?.email)
+				.length > 0
+		) {
+			setLiked(true);
+		}
 		setWindowDimensions(getWindowDimensions());
 		function handleResize() {
 			setWindowDimensions(getWindowDimensions());
@@ -156,7 +154,28 @@ const Read = ({ match }) => {
 										cursor: "pointer",
 										marginRight: "5px",
 									}}
-									// onClick={liked ? dislike : like}
+									onClick={() => history.push(`/write/${id}`)}
+								>
+									{windowDimensions.width > 700 && (
+										<div style={{ padding: "3px" }}>
+											Edit
+										</div>
+									)}
+									<AiOutlineEdit />
+								</div>
+							)}
+							{posts[id]?.user == auth.currentUser?.email && (
+								<div
+									style={{
+										display: "flex",
+										alignItems: "center",
+										border: "solid 1px rgba(61, 61, 61, 0.5)",
+										borderRadius: "8px",
+										padding: "5px",
+										cursor: "pointer",
+										marginRight: "5px",
+									}}
+									onClick={deletePost}
 								>
 									{windowDimensions.width > 700 && (
 										<div style={{ padding: "3px" }}>

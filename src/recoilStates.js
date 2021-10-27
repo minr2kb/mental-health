@@ -2,7 +2,7 @@ const { atom } = require("recoil");
 
 export const postsState = atom({
 	key: "postsState",
-	default: [],
+	default: {},
 });
 
 export const currentNoteState = atom({

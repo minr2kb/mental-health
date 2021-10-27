@@ -9,6 +9,7 @@ import Main from "./pages/Main";
 import Write from "./pages/Write";
 import Login from "./pages/Login";
 import Read from "./pages/Read";
+import Edit from "./pages/Edit";
 import "./App.css";
 import React from "react";
 
@@ -31,8 +32,9 @@ function App() {
                for exact matches. */}
 					<Route exact path="/posts" component={Main} />
 					<Route path="/posts/:id" component={Read} />
-					<Route path="/write" component={Write} />
-					<Route path="/login" component={Login} />
+					<Route exact path="/write" component={Write} />
+					<Route path="/write/:id" component={Edit} />
+					{/* <Route path="/login" component={Login} /> */}
 					<Route
 						exact
 						path="/"
@@ -40,6 +42,24 @@ function App() {
 					/>
 					<Route component={NoMatch} />
 				</Switch>
+				<footer>
+					<div
+						style={{
+							textAlign: "center",
+							fontSize: "smaller",
+							color: "rgba(100, 100, 100, 0.5)",
+							padding: "30px",
+							cursor: "pointer",
+						}}
+						// onClick={() =>
+						// 	window.open(
+						// 		"https://github.com/minr2kb/jongang-counter"
+						// 	)
+						// }
+					>
+						© 2021. (Kyungbae Min) all rights reserved
+					</div>
+				</footer>
 			</div>
 		</Router>
 	);
