@@ -44,21 +44,27 @@ const Write = () => {
 			history.push("/");
 		}
 		try {
-			const docRef = await addDoc(collection(db, "posts"), {
-				user: auth.currentUser.email,
-				username: auth.currentUser.displayName,
-				studentid: stuID,
-				title: title,
-				content: text,
-				like: 0,
-				likedusers: [],
-				timestamp: new Date().toDateString(),
-				created: new Date(),
-			});
+			if (text.length < 1 || stuID.length < 1 || title.length < 1) {
+				window.alert("Please fill in all the blanks.");
+			} else {
+				if (window.confirm("Do you want to post?")) {
+					const docRef = await addDoc(collection(db, "posts"), {
+						user: auth.currentUser.email,
+						username: auth.currentUser.displayName,
+						studentid: stuID,
+						title: title,
+						content: text,
+						like: 0,
+						likedusers: [],
+						timestamp: new Date().toDateString(),
+						created: new Date(),
+					});
 
-			window.alert("Posted!");
-			history.push("/");
-			console.log("Document written with ID: ", docRef.id);
+					window.alert("Posted!");
+					history.push("/");
+					console.log("Document written with ID: ", docRef.id);
+				}
+			}
 		} catch (e) {
 			console.error("Error adding document: ", e);
 		}
@@ -176,6 +182,9 @@ const Write = () => {
 					}}
 					value={text}
 					onChange={handleText}
+					placeholder={
+						"- Writer's information only will be provided to RAs. \n\n- You can also write in Korean.\n\n- You can edit or delete after posting.\n\n- Do not write someone's name."
+					}
 				/>
 				<div
 					style={{

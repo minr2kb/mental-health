@@ -99,7 +99,7 @@ const Read = ({ match }) => {
 	}, []);
 
 	return (
-		<div style={{ height: "100vh" }}>
+		<div style={{ height: "90vh" }}>
 			<div
 				style={{
 					display: "flex",
@@ -113,7 +113,7 @@ const Read = ({ match }) => {
 					WebkitOverflowScrolling: "touch",
 					padding: windowDimensions.width > 700 ? "40px" : "20px",
 					width: windowDimensions.width > 700 ? "60vw" : "85vw",
-					height: "90vh",
+					height: "80vh",
 					boxShadow:
 						windowDimensions.width > 700 &&
 						"rgba(138, 138, 138, 0.1) -3px 3px 10px 5px",
@@ -238,7 +238,7 @@ const Read = ({ match }) => {
 							fontSize: "large",
 							fontWeight: "400",
 							padding: "10px",
-							height: "100%",
+							height: "60vh",
 							width: "calc(100% - 20px)",
 							resize: "none",
 							fontFamily:
