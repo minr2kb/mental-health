@@ -172,7 +172,7 @@ const Main = () => {
 				Mental Health
 			</h1>
 			<div style={{ marginBottom: "10px" }}>
-				{userAgent.includes("A") ? (
+				{userAgent.includes("KAKAOTALK") ? (
 					<div style={{ marginTop: "3rem", marginBottom: "3rem" }}>
 						<div
 							style={{
