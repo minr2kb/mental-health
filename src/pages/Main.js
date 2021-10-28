@@ -172,7 +172,7 @@ const Main = () => {
 				Mental health
 			</h1>
 			<div style={{ marginBottom: "10px" }}>
-				{userAgent.includes("KAKAOTALK") ? (
+				{userAgent.includes("A") ? (
 					<div style={{ marginTop: "3rem", marginBottom: "3rem" }}>
 						<div
 							style={{
@@ -181,7 +181,8 @@ const Main = () => {
 								margin: "10px",
 							}}
 						>
-							Please open this page with Safari or Chrome.
+							[Browse not Supported]
+							<p>Please open this page with Safari or Chrome.</p>
 						</div>
 						<>
 							<div
