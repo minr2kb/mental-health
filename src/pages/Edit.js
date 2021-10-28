@@ -42,6 +42,12 @@ const Edit = ({ match }) => {
 	};
 
 	const updatePost = async () => {
+		if (auth.currentUser?.email == undefined) {
+			window.alert(
+				"Your login-information is expired. Please Sign-in again"
+			);
+			history.push("/posts");
+		}
 		updateDoc(doc(db, "posts", id), {
 			content: text,
 			studentid: stuID,
@@ -55,9 +61,6 @@ const Edit = ({ match }) => {
 	};
 
 	useEffect(() => {
-		if (auth.currentUser?.email == undefined) {
-			history.push("/posts");
-		}
 		setTitle(posts[id].title);
 		setStuID(posts[id].studentid);
 		setText(posts[id].content);
@@ -80,8 +83,6 @@ const Edit = ({ match }) => {
 						windowDimensions.width > 700 &&
 						"1px solid rgba(61, 61, 61, 0.2)",
 					borderRadius: "10px",
-					// overflow: "auto",
-					// WebkitOverflowScrolling: "touch",
 					padding: windowDimensions.width > 700 ? "40px" : "20px",
 					width: windowDimensions.width > 700 ? "60vw" : "85vw",
 					height: "90vh",
@@ -111,7 +112,7 @@ const Edit = ({ match }) => {
 						<div
 							style={{
 								fontSize: "larger",
-								fontWeight: "600",
+								fontWeight: "500",
 								padding: "10px",
 								// paddingTop: 0,
 							}}
@@ -136,7 +137,7 @@ const Edit = ({ match }) => {
 						<div
 							style={{
 								fontSize: "large",
-								fontWeight: "600",
+								fontWeight: "500",
 								padding: "10px",
 							}}
 						>
@@ -188,6 +189,7 @@ const Edit = ({ match }) => {
 							paddingBottom: "10px",
 							cursor: "pointer",
 							backgroundColor: "rgb(35,196,144)",
+							boxShadow: "rgba(35,196,144, 0.2) 0px 0px 10px 5px",
 							color: "white",
 						}}
 						onClick={updatePost}

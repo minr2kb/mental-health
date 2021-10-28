@@ -22,7 +22,7 @@ const Main = () => {
 	let history = useHistory();
 	const auth = getAuth();
 	const [isLoggedIn, setIsLoggedIn] = useState(false);
-	const [isLoaded, setIsLoaded] = useState(true);
+	const [isLoaded, setIsLoaded] = useState(false);
 	const itemsPerPage = 10;
 	const scrollRef = useRef();
 	const [page, setPage] = useState(1);
@@ -113,11 +113,12 @@ const Main = () => {
 				console.log(`${doc.id} => ${doc.data()}`);
 			});
 			setPosts(docs);
+			setIsLoaded(true);
 		});
 	};
 
 	useEffect(() => {
-		if (auth.currentUser !== null) {
+		if (auth.currentUser !== undefined) {
 			setIsLoggedIn(true);
 		}
 		fetchData();
@@ -215,10 +216,12 @@ const Main = () => {
 							style={{
 								display: "flex",
 								width: "100%",
-								justifyContent: "end",
+								justifyContent: "flex-end",
+
 								paddingTop: "20px",
 							}}
 						>
+							<div></div>
 							<div
 								style={{
 									// border: "solid 1px rgba(61, 61, 61, 0.5)",
@@ -229,6 +232,9 @@ const Main = () => {
 									paddingBottom: "10px",
 									cursor: "pointer",
 									backgroundColor: "rgb(35,196,144)",
+									boxShadow:
+										"rgba(35,196,144, 0.2) 0px 0px 10px 5px",
+
 									color: "white",
 								}}
 								onClick={() => {
@@ -257,54 +263,67 @@ const Main = () => {
 							nextPageText={"›"}
 							onChange={handlePageChange}
 						/>
+						<div
+							style={{
+								display: "flex",
+								justifyContent: "center",
+								marginBottom: "5px",
+							}}
+						>
+							{isLoggedIn ? (
+								<div
+									style={{
+										// border: "solid 1px rgba(61, 61, 61, 0.5)",
+										borderRadius: "7px",
+										paddingLeft: "15px",
+										paddingRight: "15px",
+										paddingTop: "10px",
+										paddingBottom: "10px",
+										cursor: "pointer",
+
+										color: "rgb(35,196,144)",
+										width: "5rem",
+									}}
+									onClick={() => {
+										if (
+											window.confirm(
+												"Do you want to sign-out?"
+											)
+										) {
+											logOut();
+										}
+									}}
+								>
+									Sign Out
+								</div>
+							) : (
+								<div
+									style={{
+										borderRadius: "7px",
+										paddingLeft: "15px",
+										paddingRight: "15px",
+										paddingTop: "10px",
+										paddingBottom: "10px",
+										cursor: "pointer",
+
+										color: "rgb(35,196,144)",
+										width: "5rem",
+									}}
+									onClick={() => logIn(false)}
+								>
+									Sign In
+								</div>
+							)}
+						</div>
+						<div style={{ marginBottom: "30px" }}>
+							{auth.currentUser?.email}
+						</div>
 					</div>
 				) : (
 					<div style={{ padding: "2rem" }}>
-						<HashLoader color="white" size={30} />
+						<HashLoader color="#23C490" size={30} />
 					</div>
 				)}
-			</div>
-			{isLoggedIn ? (
-				<div
-					style={{
-						// border: "solid 1px rgba(61, 61, 61, 0.5)",
-						borderRadius: "7px",
-						paddingLeft: "20px",
-						paddingRight: "15px",
-						paddingTop: "10px",
-						paddingBottom: "10px",
-						cursor: "pointer",
-						// backgroundColor: "rgb(35,196,144)",
-						color: "rgb(35,196,144)",
-					}}
-					onClick={() => {
-						if (window.confirm("Do you want to sign-out?")) {
-							logOut();
-						}
-					}}
-				>
-					Sign Out
-				</div>
-			) : (
-				<div
-					style={{
-						// border: "solid 1px rgba(61, 61, 61, 0.5)",
-						borderRadius: "7px",
-						paddingLeft: "20px",
-						paddingRight: "15px",
-						paddingTop: "10px",
-						paddingBottom: "10px",
-						cursor: "pointer",
-						// backgroundColor: "rgb(35,196,144)",
-						color: "rgb(35,196,144)",
-					}}
-					onClick={() => logIn(false)}
-				>
-					Sign In
-				</div>
-			)}
-			<div style={{ marginBottom: "30px" }}>
-				{auth.currentUser?.email}
 			</div>
 		</div>
 	);

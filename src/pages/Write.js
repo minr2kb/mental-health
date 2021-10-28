@@ -112,7 +112,7 @@ const Write = () => {
 						<div
 							style={{
 								fontSize: "larger",
-								fontWeight: "600",
+								fontWeight: "500",
 								padding: "10px",
 								// paddingTop: 0,
 							}}
@@ -137,7 +137,7 @@ const Write = () => {
 						<div
 							style={{
 								fontSize: "large",
-								fontWeight: "600",
+								fontWeight: "500",
 								padding: "10px",
 							}}
 						>
@@ -189,6 +189,7 @@ const Write = () => {
 							paddingBottom: "10px",
 							cursor: "pointer",
 							backgroundColor: "rgb(35,196,144)",
+							boxShadow: "rgba(35,196,144, 0.2) 0px 0px 10px 5px",
 							color: "white",
 						}}
 						onClick={createPost}

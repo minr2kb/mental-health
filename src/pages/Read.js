@@ -70,8 +70,9 @@ const Read = ({ match }) => {
 
 	useEffect(() => {
 		if (
-			posts[id].likedusers.filter(user => user == auth.currentUser?.email)
-				.length > 0
+			posts[id]?.likedusers.filter(
+				user => user == auth.currentUser?.email
+			).length > 0
 		) {
 			setLiked(true);
 		}
@@ -117,7 +118,7 @@ const Read = ({ match }) => {
 					<div
 						style={{
 							fontSize: "larger",
-							fontWeight: "600",
+							fontWeight: "500",
 							padding: "10px",
 							paddingBottom: 0,
 						}}
@@ -140,6 +141,7 @@ const Read = ({ match }) => {
 								fontWeight: "400",
 							}}
 						>
+							{windowDimensions.width > 700 && "Date: "}
 							{posts[id]?.timestamp}
 						</div>
 						<div style={{ display: "flex" }}>
@@ -208,25 +210,31 @@ const Read = ({ match }) => {
 						</div>
 					</div>
 				</div>
-
-				<textarea
+				<div
 					style={{
-						outline: "none",
-						border: "none",
 						borderTop: "solid 1.5px grey",
-						fontSize: "large",
-						fontWeight: "400",
-						padding: "10px",
-						height: "100%",
-						width: "calc(100% - 20px)",
-						resize: "none",
-						fontFamily:
-							"-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif",
-						lineHeight: "130%",
+						width: "100%",
 					}}
-					readOnly={true}
-					value={posts[id]?.content}
-				/>
+				>
+					<textarea
+						style={{
+							outline: "none",
+							border: "none",
+							// borderTop: "solid 1.5px grey",
+							fontSize: "large",
+							fontWeight: "400",
+							padding: "10px",
+							height: "100%",
+							width: "calc(100% - 20px)",
+							resize: "none",
+							fontFamily:
+								"-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif",
+							lineHeight: "130%",
+						}}
+						readOnly={true}
+						value={posts[id]?.content}
+					/>
+				</div>
 			</div>
 		</div>
 	);
