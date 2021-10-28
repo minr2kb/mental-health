@@ -110,7 +110,7 @@ const Main = () => {
 		getDocs(collection(db, "posts"), orderBy("created")).then(snapshots => {
 			snapshots.forEach(doc => {
 				docs[doc.id] = doc.data();
-				console.log(`${doc.id} => ${doc.data()}`);
+				// console.log(`${doc.id} => ${doc.data()}`);
 			});
 			setPosts(docs);
 			setIsLoaded(true);
@@ -118,9 +118,6 @@ const Main = () => {
 	};
 
 	useEffect(() => {
-		if (auth.currentUser !== undefined && auth.currentUser !== null) {
-			setIsLoggedIn(true);
-		}
 		fetchData();
 		setWindowDimensions(getWindowDimensions());
 		function handleResize() {
@@ -129,6 +126,13 @@ const Main = () => {
 		window.addEventListener("resize", handleResize);
 		return () => window.removeEventListener("resize", handleResize);
 	}, []);
+
+	useEffect(() => {
+		console.log(auth.currentUser?.email);
+		if (auth.currentUser?.email !== undefined) {
+			setIsLoggedIn(true);
+		}
+	}, [auth.currentUser]);
 
 	return (
 		<div className="App">
