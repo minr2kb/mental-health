@@ -34,6 +34,7 @@ const Read = ({ match }) => {
 	const [posts, setPosts] = useRecoilState(postsState);
 	const [liked, setLiked] = useState(false);
 	const [post, setPost] = useState({});
+	const [isLoaded, setIsLoaded] = useState(false);
 
 	function getWindowDimensions() {
 		const { innerWidth: width, innerHeight: height } = window;
@@ -82,6 +83,7 @@ const Read = ({ match }) => {
 			) {
 				setLiked(true);
 			}
+			setIsLoaded(true);
 		});
 	};
 
@@ -157,7 +159,7 @@ const Read = ({ match }) => {
 							{post?.timestamp}
 						</div>
 						<div style={{ display: "flex" }}>
-							{post?.user == auth.currentUser?.email && (
+							{isLoaded && post?.user == auth.currentUser?.email && (
 								<div
 									style={{
 										display: "flex",
@@ -178,7 +180,7 @@ const Read = ({ match }) => {
 									<AiOutlineEdit />
 								</div>
 							)}
-							{post?.user == auth.currentUser?.email && (
+							{isLoaded && post?.user == auth.currentUser?.email && (
 								<div
 									style={{
 										display: "flex",
