@@ -9,13 +9,15 @@ import { AiFillHeart } from "react-icons/ai";
 import {
 	getAuth,
 	signInWithPopup,
+	signInWithRedirect,
+	getRedirectResult,
 	GoogleAuthProvider,
 	signOut,
 } from "firebase/auth";
 import { postsState } from "../recoilStates";
 import { useRecoilState } from "recoil";
 import { provider } from "./firebase";
-import { collection, getDocs, orderBy } from "firebase/firestore";
+import { collection, getDocs, orderBy, query } from "firebase/firestore";
 import { db } from "./firebase";
 
 const Main = () => {
@@ -26,10 +28,9 @@ const Main = () => {
 	const itemsPerPage = 10;
 	const scrollRef = useRef();
 	const [page, setPage] = useState(1);
-	const [modalIsOpen, setModalIsOpen] = useState(false);
-	const [currentPostID, setCurrentPostID] = useState("");
+	const [userAgent, setUserAgent] = useState("");
+
 	const [posts, setPosts] = useRecoilState(postsState);
-	const [likes, setLikes] = useState([]);
 	const [windowDimensions, setWindowDimensions] = useState({
 		width: 500,
 		height: 500,
@@ -51,13 +52,9 @@ const Main = () => {
 		});
 	};
 
-	const readPost = id => {
-		setCurrentPostID(id);
-		setModalIsOpen(true);
-	};
-
 	const logIn = isPosting => {
 		// signInWithRedirect(auth, provider).then(() =>
+		// 	getRedirectResult(auth)
 		signInWithPopup(auth, provider)
 			.then(result => {
 				// This gives you a Google Access Token. You can use it to access the Google API.
@@ -107,7 +104,9 @@ const Main = () => {
 
 	const fetchData = () => {
 		let docs = {};
-		getDocs(collection(db, "posts"), orderBy("created")).then(snapshots => {
+		getDocs(
+			query(collection(db, "posts"), orderBy("created", "desc"))
+		).then(snapshots => {
 			snapshots.forEach(doc => {
 				docs[doc.id] = doc.data();
 				// console.log(`${doc.id} => ${doc.data()}`);
@@ -118,6 +117,8 @@ const Main = () => {
 	};
 
 	useEffect(() => {
+		setUserAgent(navigator.userAgent);
+
 		fetchData();
 		setWindowDimensions(getWindowDimensions());
 		function handleResize() {
@@ -136,7 +137,17 @@ const Main = () => {
 
 	return (
 		<div className="App">
-			<h1 style={{ marginTop: "30px" }}>Mental health</h1>
+			<h1
+				style={{ marginTop: "30px", cursor: "pointer" }}
+				onClick={() =>
+					window.open(
+						"https://mental-health-rc2021f.web.app/",
+						"_self"
+					)
+				}
+			>
+				Mental health
+			</h1>
 			<div style={{ marginBottom: "10px" }}>
 				{isLoaded ? (
 					<div ref={scrollRef}>
@@ -163,7 +174,6 @@ const Main = () => {
 														? "60vw"
 														: "85vw",
 											}}
-											onClick={() => readPost(key)}
 										>
 											<div
 												style={{
@@ -321,6 +331,15 @@ const Main = () => {
 						</div>
 						<div style={{ marginBottom: "30px" }}>
 							{auth.currentUser?.email}
+						</div>
+						<div
+							style={{
+								marginBottom: "30px",
+								overflowWrap: "anywhere",
+								width: "50vw",
+							}}
+						>
+							{userAgent}
 						</div>
 					</div>
 				) : (
