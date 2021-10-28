@@ -44,9 +44,9 @@ const Edit = ({ match }) => {
 	const updatePost = async () => {
 		if (auth.currentUser?.email == undefined) {
 			window.alert(
-				"Your login-information is expired. Please Sign-in again"
+				"Your login information is expired. Please Sign-in again"
 			);
-			history.push("/posts");
+			history.push("/");
 		}
 		updateDoc(doc(db, "posts", id), {
 			content: text,

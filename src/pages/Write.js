@@ -37,6 +37,12 @@ const Write = () => {
 	};
 
 	const createPost = async () => {
+		if (auth.currentUser?.email == undefined) {
+			window.alert(
+				"Your login information is expired. Please Sign-in again"
+			);
+			history.push("/");
+		}
 		try {
 			const docRef = await addDoc(collection(db, "posts"), {
 				user: auth.currentUser.email,
@@ -51,7 +57,7 @@ const Write = () => {
 			});
 
 			window.alert("Posted!");
-			history.push("/posts");
+			history.push("/");
 			console.log("Document written with ID: ", docRef.id);
 		} catch (e) {
 			console.error("Error adding document: ", e);
@@ -60,7 +66,7 @@ const Write = () => {
 
 	useEffect(() => {
 		if (auth.currentUser?.email == undefined) {
-			history.push("/posts");
+			history.push("/");
 		}
 		setWindowDimensions(getWindowDimensions());
 		function handleResize() {

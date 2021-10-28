@@ -118,7 +118,7 @@ const Main = () => {
 	};
 
 	useEffect(() => {
-		if (auth.currentUser !== undefined) {
+		if (auth.currentUser !== undefined && auth.currentUser !== null) {
 			setIsLoggedIn(true);
 		}
 		fetchData();
