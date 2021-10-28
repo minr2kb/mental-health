@@ -181,7 +181,7 @@ const Write = () => {
 					style={{
 						display: "flex",
 						width: "100%",
-						justifyContent: "end",
+						justifyContent: "flex-end",
 						paddingTop: "20px",
 					}}
 				>

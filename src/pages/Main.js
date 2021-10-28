@@ -326,7 +326,6 @@ const Main = () => {
 								paddingTop: "20px",
 							}}
 						>
-							<div></div>
 							<div
 								style={{
 									// border: "solid 1px rgba(61, 61, 61, 0.5)",
