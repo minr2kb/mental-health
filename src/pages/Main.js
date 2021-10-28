@@ -29,6 +29,8 @@ const Main = () => {
 	const scrollRef = useRef();
 	const [page, setPage] = useState(1);
 	const [userAgent, setUserAgent] = useState("");
+	const [copied, setCopied] = useState(false);
+	const linkInput = useRef();
 
 	const [posts, setPosts] = useRecoilState(postsState);
 	const [windowDimensions, setWindowDimensions] = useState({
@@ -116,9 +118,21 @@ const Main = () => {
 		});
 	};
 
+	const copy = () => {
+		const el = linkInput.current;
+		el.select();
+		navigator.clipboard.writeText(el.value);
+		setCopied(true);
+	};
+
 	useEffect(() => {
 		setUserAgent(navigator.userAgent);
-
+		console.log(navigator.userAgent);
+		if (navigator.userAgent.includes("KAKAOTALK")) {
+			window.alert(
+				"This browser is not supported. PLEASE open this page with Safari or Chrome."
+			);
+		}
 		fetchData();
 		setWindowDimensions(getWindowDimensions());
 		function handleResize() {
@@ -137,8 +151,17 @@ const Main = () => {
 
 	return (
 		<div className="App">
+			<h3
+				style={{
+					marginTop: "5rem",
+					marginBottom: 0,
+					cursor: "pointer",
+				}}
+			>
+				2021F RC Event
+			</h3>
 			<h1
-				style={{ marginTop: "30px", cursor: "pointer" }}
+				style={{ marginTop: "0", cursor: "pointer", paddingTop: 0 }}
 				onClick={() =>
 					window.open(
 						"https://mental-health-rc2021f.web.app/",
@@ -149,7 +172,74 @@ const Main = () => {
 				Mental health
 			</h1>
 			<div style={{ marginBottom: "10px" }}>
-				{isLoaded ? (
+				{userAgent.includes("KAKAOTALK") ? (
+					<div style={{ marginTop: "3rem", marginBottom: "3rem" }}>
+						<div
+							style={{
+								fontSize: "large",
+								fontWeight: "400",
+								margin: "10px",
+							}}
+						>
+							Please open this page with Safari or Chrome.
+						</div>
+						<>
+							<div
+								style={{
+									marginTop: "10px",
+									display: "flex",
+									flexDirection:
+										windowDimensions.width <= 700 &&
+										"column",
+									alignContent: "center",
+									justifyContent: "center",
+									alignItems: "center",
+								}}
+							>
+								<input
+									className="input"
+									style={{
+										width:
+											windowDimensions.width > 700
+												? "40vw"
+												: "90vw",
+									}}
+									type="text"
+									value="https://mental-health-rc2021f.web.app/"
+									ref={linkInput}
+									readOnly
+								></input>
+								<div
+									style={{
+										borderRadius: "7px",
+										paddingLeft: "20px",
+										paddingRight: "20px",
+										paddingTop: "10px",
+										paddingBottom: "10px",
+										marginLeft: "5px",
+										cursor: "pointer",
+										backgroundColor: "rgb(35,196,144)",
+										boxShadow:
+											"rgba(35,196,144, 0.2) 0px 0px 10px 5px",
+										// width:
+										// 	windowDimensions.width > 700 &&
+										// 	"fit-content",
+										margin: "10px",
+
+										color: "white",
+									}}
+									onClick={copy}
+								>
+									{copied ? "Copied!" : "Copy"}
+								</div>
+							</div>
+
+							{copied ? (
+								<div style={{ color: "green" }}>Copied!</div>
+							) : null}
+						</>
+					</div>
+				) : isLoaded ? (
 					<div ref={scrollRef}>
 						{Object.keys(posts).map(
 							(key, idx) =>
@@ -332,7 +422,7 @@ const Main = () => {
 						<div style={{ marginBottom: "30px" }}>
 							{auth.currentUser?.email}
 						</div>
-						<div
+						{/* <div
 							style={{
 								marginBottom: "30px",
 								overflowWrap: "anywhere",
@@ -340,7 +430,7 @@ const Main = () => {
 							}}
 						>
 							{userAgent}
-						</div>
+						</div> */}
 					</div>
 				) : (
 					<div style={{ padding: "2rem" }}>
