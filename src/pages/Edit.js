@@ -5,7 +5,7 @@ import { Link, useHistory } from "react-router-dom";
 import { AiOutlineArrowLeft } from "react-icons/ai";
 import { useRecoilState } from "recoil";
 import { postsState } from "../recoilStates";
-import { doc, updateDoc } from "firebase/firestore";
+import { doc, updateDoc, getDoc } from "firebase/firestore";
 import { db } from "./firebase";
 
 const Edit = ({ match }) => {
@@ -60,10 +60,16 @@ const Edit = ({ match }) => {
 		});
 	};
 
+	const getPost = () => {
+		getDoc(doc(db, "posts", id)).then(snapshot => {
+			setTitle(snapshot.data().title);
+			setStuID(snapshot.data().studentid);
+			setText(snapshot.data().content);
+		});
+	};
+
 	useEffect(() => {
-		setTitle(posts[id].title);
-		setStuID(posts[id].studentid);
-		setText(posts[id].content);
+		getPost();
 		setWindowDimensions(getWindowDimensions());
 		function handleResize() {
 			setWindowDimensions(getWindowDimensions());

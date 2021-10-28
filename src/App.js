@@ -31,10 +31,9 @@ function App() {
                which is different behavior than the Express routes that by default looks
                for exact matches. */}
 					<Route exact path="/posts" component={Main} />
-					<Route path="/posts/:id" component={Read} />
+					<Route exact path="/posts/:id" component={Read} />
 					<Route exact path="/write" component={Write} />
 					<Route path="/write/:id" component={Edit} />
-					{/* <Route path="/login" component={Login} /> */}
 					<Route
 						exact
 						path="/"
@@ -49,13 +48,8 @@ function App() {
 							fontSize: "smaller",
 							color: "rgba(100, 100, 100, 0.5)",
 							padding: "30px",
-							cursor: "pointer",
+							// cursor: "pointer",
 						}}
-						// onClick={() =>
-						// 	window.open(
-						// 		"https://github.com/minr2kb/jongang-counter"
-						// 	)
-						// }
 					>
 						© 2021. (Kyungbae Min) all rights reserved
 					</div>

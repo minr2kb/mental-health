@@ -18,6 +18,8 @@ import {
 	arrayUnion,
 	arrayRemove,
 	deleteDoc,
+	getDoc,
+	collection,
 } from "firebase/firestore";
 import { db } from "./firebase";
 
@@ -31,6 +33,7 @@ const Read = ({ match }) => {
 	});
 	const [posts, setPosts] = useRecoilState(postsState);
 	const [liked, setLiked] = useState(false);
+	const [post, setPost] = useState({});
 
 	function getWindowDimensions() {
 		const { innerWidth: width, innerHeight: height } = window;
@@ -68,14 +71,23 @@ const Read = ({ match }) => {
 		}
 	};
 
+	const getPost = () => {
+		getDoc(doc(db, "posts", id)).then(snapshot => {
+			setPost(snapshot.data());
+			if (
+				snapshot
+					.data()
+					?.likedusers.filter(user => user == auth.currentUser?.email)
+					.length > 0
+			) {
+				setLiked(true);
+			}
+		});
+	};
+
 	useEffect(() => {
-		if (
-			posts[id]?.likedusers.filter(
-				user => user == auth.currentUser?.email
-			).length > 0
-		) {
-			setLiked(true);
-		}
+		getPost();
+
 		setWindowDimensions(getWindowDimensions());
 		function handleResize() {
 			setWindowDimensions(getWindowDimensions());
@@ -123,7 +135,7 @@ const Read = ({ match }) => {
 							paddingBottom: 0,
 						}}
 					>
-						Title: {posts[id]?.title}
+						Title: {post?.title}
 					</div>
 					<div
 						style={{
@@ -142,10 +154,10 @@ const Read = ({ match }) => {
 							}}
 						>
 							{windowDimensions.width > 700 && "Date: "}
-							{posts[id]?.timestamp}
+							{post?.timestamp}
 						</div>
 						<div style={{ display: "flex" }}>
-							{posts[id]?.user == auth.currentUser?.email && (
+							{post?.user == auth.currentUser?.email && (
 								<div
 									style={{
 										display: "flex",
@@ -166,7 +178,7 @@ const Read = ({ match }) => {
 									<AiOutlineEdit />
 								</div>
 							)}
-							{posts[id]?.user == auth.currentUser?.email && (
+							{post?.user == auth.currentUser?.email && (
 								<div
 									style={{
 										display: "flex",
@@ -232,7 +244,7 @@ const Read = ({ match }) => {
 							lineHeight: "130%",
 						}}
 						readOnly={true}
-						value={posts[id]?.content}
+						value={post?.content}
 					/>
 				</div>
 			</div>
