@@ -52,7 +52,7 @@ const Read = ({ match }) => {
 		} else {
 			updateDoc(doc(db, "posts", id), {
 				like: increment(1),
-				likedusers: arrayUnion(auth.currentUser?.email),
+				likedusers: arrayUnion(auth.currentUser?.uid),
 			}).then(resp => setLiked(true));
 		}
 	};
@@ -60,7 +60,7 @@ const Read = ({ match }) => {
 	const dislike = () => {
 		updateDoc(doc(db, "posts", id), {
 			like: increment(-1),
-			likedusers: arrayRemove(auth.currentUser?.email),
+			likedusers: arrayRemove(auth.currentUser?.uid),
 		}).then(resp => setLiked(false));
 	};
 
@@ -78,7 +78,7 @@ const Read = ({ match }) => {
 			if (
 				snapshot
 					.data()
-					?.likedusers.filter(user => user == auth.currentUser?.email)
+					?.likedusers.filter(user => user == auth.currentUser?.uid)
 					.length > 0
 			) {
 				setLiked(true);
