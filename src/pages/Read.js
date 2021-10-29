@@ -159,7 +159,7 @@ const Read = ({ match }) => {
 							{post?.timestamp}
 						</div>
 						<div style={{ display: "flex" }}>
-							{isLoaded && post?.user == auth.currentUser?.email && (
+							{isLoaded && post?.uid == auth.currentUser?.uid && (
 								<div
 									style={{
 										display: "flex",
@@ -180,7 +180,7 @@ const Read = ({ match }) => {
 									<AiOutlineEdit />
 								</div>
 							)}
-							{isLoaded && post?.user == auth.currentUser?.email && (
+							{isLoaded && post?.uid == auth.currentUser?.uid && (
 								<div
 									style={{
 										display: "flex",

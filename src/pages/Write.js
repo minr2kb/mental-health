@@ -17,6 +17,7 @@ const Write = () => {
 	const [title, setTitle] = useState("");
 	const [stuID, setStuID] = useState("");
 	const [text, setText] = useState("");
+	const [collectInfo, setcollectInfo] = useState(false);
 
 	function getWindowDimensions() {
 		const { innerWidth: width, innerHeight: height } = window;
@@ -44,26 +45,35 @@ const Write = () => {
 			history.push("/");
 		}
 		try {
-			if (text.length < 1 || stuID.length < 1 || title.length < 1) {
+			if (text.length < 1 || title.length < 1) {
 				window.alert("Please fill in all the blanks.");
 			} else {
-				if (window.confirm("Do you want to post?")) {
-					const docRef = await addDoc(collection(db, "posts"), {
-						user: auth.currentUser.email,
-						username: auth.currentUser.displayName,
-						studentid: stuID,
-						title: title,
-						content: text,
-						like: 0,
-						likedusers: [],
-						timestamp: new Date().toDateString(),
-						created: new Date(),
-					});
-
-					window.alert("Posted!");
-					history.push("/");
-					console.log("Document written with ID: ", docRef.id);
+				if (
+					window.confirm(
+						"Do you agree to provide your information to RC team for the prize? If you select 'cancel', we do not collect your login information(Completely anounymous)."
+					)
+				) {
+					setcollectInfo(true);
 				}
+
+				const docRef = await addDoc(collection(db, "posts"), {
+					uid: auth.currentUser.uid,
+					user: collectInfo ? auth.currentUser.email : "anounymous",
+					username: collectInfo
+						? auth.currentUser.displayName
+						: "anounymous",
+					studentid: collectInfo ? stuID : "anounymous",
+					title: title,
+					content: text,
+					like: 0,
+					likedusers: [],
+					timestamp: new Date().toDateString(),
+					created: new Date(),
+				});
+
+				window.alert("Posted!");
+				history.push("/");
+				console.log("Document written with ID: ", docRef.id);
 			}
 		} catch (e) {
 			console.error("Error adding document: ", e);
@@ -183,7 +193,7 @@ const Write = () => {
 					value={text}
 					onChange={handleText}
 					placeholder={
-						"- Writer's information only will be provided to RAs. \n\n- You can also write in Korean.\n\n- You can edit or delete after posting.\n\n- Do not write someone's name."
+						"- Writer's information will not be displayed on the post. \n\n- You can also write in Korean.\n\n- You can edit or delete after posting.\n\n- Do not write someone's name."
 					}
 				/>
 				<div
