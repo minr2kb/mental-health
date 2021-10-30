@@ -3,6 +3,7 @@ import "../App.css";
 import { Link, useHistory } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import { postsState } from "../recoilStates";
+import HashLoader from "react-spinners/HashLoader";
 import {
 	AiOutlineArrowLeft,
 	AiOutlineHeart,
@@ -120,135 +121,158 @@ const Read = ({ match }) => {
 					marginTop: "2vh",
 				}}
 			>
-				<Link to="/posts">
-					<AiOutlineArrowLeft style={{ padding: "10px" }} size={20} />
-				</Link>
-				<div
-					style={{
-						textAlign: "start",
-						width: "100%",
-					}}
-				>
-					<div
-						style={{
-							fontSize: "larger",
-							fontWeight: "500",
-							padding: "10px",
-							paddingBottom: 0,
-						}}
-					>
-						Title: {post?.title}
-					</div>
-					<div
-						style={{
-							display: "flex",
-							marginTop: "10px",
-							justifyContent: "space-between",
-							alignItems: "center",
-							padding: "10px",
-							paddingTop: 0,
-						}}
-					>
+				{isLoaded ? (
+					<>
+						<Link to="/posts">
+							<AiOutlineArrowLeft
+								style={{ padding: "10px" }}
+								size={20}
+							/>
+						</Link>
 						<div
 							style={{
-								fontSize: "large",
-								fontWeight: "400",
+								textAlign: "start",
+								width: "100%",
 							}}
 						>
-							{windowDimensions.width > 700 && "Date: "}
-							{post?.timestamp}
-						</div>
-						<div style={{ display: "flex" }}>
-							{isLoaded && post?.uid == auth.currentUser?.uid && (
-								<div
-									style={{
-										display: "flex",
-										alignItems: "center",
-										border: "solid 1px rgba(61, 61, 61, 0.5)",
-										borderRadius: "8px",
-										padding: "5px",
-										cursor: "pointer",
-										marginRight: "5px",
-									}}
-									onClick={() => history.push(`/write/${id}`)}
-								>
-									{windowDimensions.width > 700 && (
-										<div style={{ padding: "3px" }}>
-											Edit
-										</div>
-									)}
-									<AiOutlineEdit />
-								</div>
-							)}
-							{isLoaded && post?.uid == auth.currentUser?.uid && (
-								<div
-									style={{
-										display: "flex",
-										alignItems: "center",
-										border: "solid 1px rgba(61, 61, 61, 0.5)",
-										borderRadius: "8px",
-										padding: "5px",
-										cursor: "pointer",
-										marginRight: "5px",
-									}}
-									onClick={deletePost}
-								>
-									{windowDimensions.width > 700 && (
-										<div style={{ padding: "3px" }}>
-											Delete
-										</div>
-									)}
-									<AiOutlineDelete />
-								</div>
-							)}
+							<div
+								style={{
+									fontSize: "larger",
+									fontWeight: "500",
+									padding: "10px",
+									paddingBottom: 0,
+								}}
+							>
+								Title: {post?.title}
+							</div>
 							<div
 								style={{
 									display: "flex",
+									marginTop: "10px",
+									justifyContent: "space-between",
 									alignItems: "center",
-									border: "solid 1px rgba(61, 61, 61, 0.5)",
-									borderRadius: "8px",
-									padding: "5px",
-									cursor: "pointer",
+									padding: "10px",
+									paddingTop: 0,
 								}}
-								onClick={liked ? dislike : like}
 							>
-								{windowDimensions.width > 700 && (
-									<div style={{ padding: "3px" }}>Like</div>
-								)}
-								{liked ? (
-									<AiFillHeart color="coral" />
-								) : (
-									<AiOutlineHeart />
-								)}
+								<div
+									style={{
+										fontSize: "large",
+										fontWeight: "400",
+									}}
+								>
+									{windowDimensions.width > 700 && "Date: "}
+									{post?.timestamp}
+								</div>
+								<div style={{ display: "flex" }}>
+									{post?.uid == auth.currentUser?.uid && (
+										<div
+											style={{
+												display: "flex",
+												alignItems: "center",
+												border: "solid 1px rgba(61, 61, 61, 0.5)",
+												borderRadius: "8px",
+												padding: "5px",
+												cursor: "pointer",
+												marginRight: "5px",
+											}}
+											onClick={() =>
+												history.push(`/write/${id}`)
+											}
+										>
+											{windowDimensions.width > 700 && (
+												<div style={{ padding: "3px" }}>
+													Edit
+												</div>
+											)}
+											<AiOutlineEdit />
+										</div>
+									)}
+									{post?.uid == auth.currentUser?.uid && (
+										<div
+											style={{
+												display: "flex",
+												alignItems: "center",
+												border: "solid 1px rgba(61, 61, 61, 0.5)",
+												borderRadius: "8px",
+												padding: "5px",
+												cursor: "pointer",
+												marginRight: "5px",
+											}}
+											onClick={deletePost}
+										>
+											{windowDimensions.width > 700 && (
+												<div style={{ padding: "3px" }}>
+													Delete
+												</div>
+											)}
+											<AiOutlineDelete />
+										</div>
+									)}
+									<div
+										style={{
+											display: "flex",
+											alignItems: "center",
+											border: "solid 1px rgba(61, 61, 61, 0.5)",
+											borderRadius: "8px",
+											padding: "5px",
+											cursor: "pointer",
+										}}
+										onClick={liked ? dislike : like}
+									>
+										{windowDimensions.width > 700 && (
+											<div style={{ padding: "3px" }}>
+												Like
+											</div>
+										)}
+										{liked ? (
+											<AiFillHeart color="coral" />
+										) : (
+											<AiOutlineHeart />
+										)}
+									</div>
+								</div>
 							</div>
 						</div>
-					</div>
-				</div>
-				<div
-					style={{
-						borderTop: "solid 1.5px grey",
-						width: "100%",
-					}}
-				>
-					<textarea
+						<div
+							style={{
+								borderTop: "solid 1.5px grey",
+								width: "100%",
+							}}
+						>
+							<textarea
+								style={{
+									outline: "none",
+									border: "none",
+									// borderTop: "solid 1.5px grey",
+									fontSize: "large",
+									fontWeight: "400",
+									padding: "10px",
+									height: "60vh",
+									width: "calc(100% - 20px)",
+									resize: "none",
+									fontFamily:
+										"-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif",
+									lineHeight: "130%",
+								}}
+								readOnly={true}
+								value={post?.content}
+							/>
+						</div>
+					</>
+				) : (
+					<div
 						style={{
-							outline: "none",
-							border: "none",
-							// borderTop: "solid 1.5px grey",
-							fontSize: "large",
-							fontWeight: "400",
-							padding: "10px",
-							height: "60vh",
-							width: "calc(100% - 20px)",
-							resize: "none",
-							fontFamily:
-								"-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif",
-							lineHeight: "130%",
+							display: "flex",
+							justifyContent: "center",
+							alignItems: "center",
+							width: "100%",
+							height: "100%",
 						}}
-						readOnly={true}
-						value={post?.content}
-					/>
-				</div>
+					>
+						<HashLoader color="#23C490" size={30} />
+					</div>
+				)}
 			</div>
 		</div>
 	);

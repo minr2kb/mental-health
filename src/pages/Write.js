@@ -17,7 +17,6 @@ const Write = () => {
 	const [title, setTitle] = useState("");
 	const [stuID, setStuID] = useState("");
 	const [text, setText] = useState("");
-	const [collectInfo, setcollectInfo] = useState(false);
 
 	function getWindowDimensions() {
 		const { innerWidth: width, innerHeight: height } = window;
@@ -48,32 +47,48 @@ const Write = () => {
 			if (text.length < 1 || title.length < 1) {
 				window.alert("Please fill in all the blanks.");
 			} else {
-				if (
-					window.confirm(
-						"Do you agree to provide your information to RC team for the prize? If you select 'cancel', we do not collect your login information(Completely anounymous)."
-					)
-				) {
-					setcollectInfo(true);
+				if (window.confirm("Do you want to post?")) {
+					if (
+						window.confirm(
+							"Do you agree to provide your information to RC team for the prize? If you select 'cancel', we do not collect your login information(Completely anounymous)."
+						)
+					) {
+						const docRef = await addDoc(collection(db, "posts"), {
+							uid: auth.currentUser.uid,
+							user: auth.currentUser.email,
+
+							username: auth.currentUser.displayName,
+							studentid: stuID,
+							title: title,
+							content: text,
+							like: 0,
+							likedusers: [],
+							timestamp: new Date().toDateString(),
+							created: new Date(),
+						});
+
+						window.alert("Posted!");
+						history.push("/");
+						console.log("Document written with ID: ", docRef.id);
+					} else {
+						const docRef = await addDoc(collection(db, "posts"), {
+							uid: auth.currentUser.uid,
+							user: "anounymous",
+							username: "anounymous",
+							studentid: "anounymous",
+							title: title,
+							content: text,
+							like: 0,
+							likedusers: [],
+							timestamp: new Date().toDateString(),
+							created: new Date(),
+						});
+
+						window.alert("Posted!");
+						history.push("/");
+						console.log("Document written with ID: ", docRef.id);
+					}
 				}
-
-				const docRef = await addDoc(collection(db, "posts"), {
-					uid: auth.currentUser.uid,
-					user: collectInfo ? auth.currentUser.email : "anounymous",
-					username: collectInfo
-						? auth.currentUser.displayName
-						: "anounymous",
-					studentid: collectInfo ? stuID : "anounymous",
-					title: title,
-					content: text,
-					like: 0,
-					likedusers: [],
-					timestamp: new Date().toDateString(),
-					created: new Date(),
-				});
-
-				window.alert("Posted!");
-				history.push("/");
-				console.log("Document written with ID: ", docRef.id);
 			}
 		} catch (e) {
 			console.error("Error adding document: ", e);
