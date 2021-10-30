@@ -123,7 +123,10 @@ const Read = ({ match }) => {
 			>
 				{isLoaded ? (
 					<>
-						<Link to="/posts">
+						<Link
+							to="/posts"
+							style={{ color: "rgb(35, 196, 144)" }}
+						>
 							<AiOutlineArrowLeft
 								style={{ padding: "10px" }}
 								size={20}

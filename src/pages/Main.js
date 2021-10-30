@@ -268,8 +268,6 @@ const Main = () => {
 										>
 											<div
 												style={{
-													// paddingTop: "3px",
-													// paddingBottom: "3px",
 													padding: "3px",
 												}}
 											>
@@ -299,6 +297,7 @@ const Main = () => {
 															700 && "column",
 													alignItems: "center",
 													justifyItems: "center",
+													padding: "3px",
 												}}
 											>
 												<AiFillHeart color="coral" />

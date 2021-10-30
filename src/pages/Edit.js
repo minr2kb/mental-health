@@ -103,7 +103,10 @@ const Edit = ({ match }) => {
 			>
 				{isLoaded ? (
 					<>
-						<Link to={`/posts/${id}`}>
+						<Link
+							to={`/posts/${id}`}
+							style={{ color: "rgb(35, 196, 144)" }}
+						>
 							<AiOutlineArrowLeft
 								style={{ padding: "10px" }}
 								size={20}
@@ -168,10 +171,9 @@ const Edit = ({ match }) => {
 
 						<textarea
 							style={{
-								// outline: "none",
-								// border: "none",
+								border: "solid 1.5px darkgray",
+								borderRadius: "5px",
 								marginTop: "10px",
-								borderTop: "solid 1.5px grey",
 								fontSize: "large",
 								fontWeight: "400",
 								padding: "10px",

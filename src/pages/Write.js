@@ -129,7 +129,7 @@ const Write = () => {
 					marginTop: "2vh",
 				}}
 			>
-				<Link to="/posts">
+				<Link to="/posts" style={{ color: "rgb(35, 196, 144)" }}>
 					<AiOutlineArrowLeft style={{ padding: "10px" }} size={20} />
 				</Link>
 				<div
@@ -191,10 +191,9 @@ const Write = () => {
 
 				<textarea
 					style={{
-						// outline: "none",
-						// border: "none",
 						marginTop: "10px",
-						borderTop: "solid 1.5px grey",
+						border: "solid 1.5px darkgray",
+						borderRadius: "5px",
 						fontSize: "large",
 						fontWeight: "400",
 						padding: "10px",
@@ -207,9 +206,7 @@ const Write = () => {
 					}}
 					value={text}
 					onChange={handleText}
-					placeholder={
-						"- Writer's information will not be displayed on the post. \n\n- You can also write in Korean.\n\n- You can edit or delete after posting.\n\n- Do not write someone's name."
-					}
+					placeholder={`- Writer's information will not be displayed on the post. \n\n- You can also write in Korean. \n\n- You can edit or delete after posting. \n\n- Do not write someone's name.`}
 				/>
 				<div
 					style={{
