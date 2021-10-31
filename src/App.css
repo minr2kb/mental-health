@@ -53,19 +53,20 @@
 	box-shadow: rgba(138, 138, 138, 0.1) -3px 3px 10px 5px;
 	border-radius: 8px;
 	padding: 10px;
-	/* transition: all 0.3s ease;
-	-webkit-transition: all 0.3s ease;
-	-moz-transition: all 0.3s ease;
-	-ms-transition: all 0.3s ease;
-	-o-transition: all 0.3s ease; */
+	transition: all 0.1s ease;
+	-webkit-transition: all 0.1s ease;
+	-moz-transition: all 0.1s ease;
+	-ms-transition: all 0.1s ease;
+	-o-transition: all 0.1s ease;
 }
 .chat-box:hover {
 	border-color: rgba(35, 196, 144, 0.7);
-	/* transition: all 0.3s ease;
-	-webkit-transition: all 0.3s ease;
-	-moz-transition: all 0.3s ease;
-	-ms-transition: all 0.3s ease;
-	-o-transition: all 0.3s ease; */
+	box-shadow: rgba(35, 196, 144, 0.1) -3px 3px 10px 5px;
+	transition: all 0.1s ease;
+	-webkit-transition: all 0.1s ease;
+	-moz-transition: all 0.1s ease;
+	-ms-transition: all 0.1s ease;
+	-o-transition: all 0.1s ease;
 }
 
 .input {

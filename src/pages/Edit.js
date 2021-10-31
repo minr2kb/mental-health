@@ -186,6 +186,7 @@ const Edit = ({ match }) => {
 							}}
 							value={text}
 							onChange={handleText}
+							placeholder={`- Writer's information will not be displayed on the post. \n\n- You can also write in Korean. \n\n- You can edit or delete after posting. \n\n- Do not write someone's name.`}
 						/>
 						<div
 							style={{
