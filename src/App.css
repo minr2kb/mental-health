@@ -28,23 +28,6 @@
 	transition: all 0.07s ease-out;
 }
 
-.input-field {
-	background: transparent;
-	border: none;
-	border-bottom: 1px solid darkgray;
-	outline: none;
-	padding: 8px;
-	font-size: large;
-	color: white;
-	width: 30vw;
-	transition: all 0.07s ease-out;
-}
-
-.input-field:focus {
-	border-color: white;
-	transition: all 0.07s ease-out;
-}
-
 .chat-box {
 	width: 60vw;
 	margin-top: 10px;
@@ -69,12 +52,20 @@
 	-o-transition: all 0.1s ease;
 }
 
+.reply {
+	width: calc(100% - 20px);
+	text-align: start;
+	border-bottom: solid 1px rgba(61, 61, 61, 0.3);
+	padding: 10px;
+	transition: all 0.1s ease;
+}
+
 .input {
 	padding-top: 5px;
 	padding-bottom: 5px;
 	background: none;
 	font-size: large;
-	width: 50%;
+	width: 70%;
 	border: none;
 	border-bottom: 2px solid rgb(193, 193, 193);
 	transition: all 0.3s ease;
@@ -82,6 +73,9 @@
 	-moz-transition: all 0.3s ease;
 	-ms-transition: all 0.3s ease;
 	-o-transition: all 0.3s ease;
+}
+.stu {
+	width: 100%;
 }
 
 .input:focus {

@@ -1,10 +1,11 @@
-import { useEffect, useState, forwardRef, useRef } from "react";
+import { useEffect, useState } from "react";
 import "../App.css";
 import { getAuth } from "firebase/auth";
 import { Link, useHistory } from "react-router-dom";
 import { AiOutlineArrowLeft } from "react-icons/ai";
 import { collection, addDoc } from "firebase/firestore";
 import { db } from "./firebase";
+import Modal from "./components/Modal";
 
 const Write = () => {
 	const auth = getAuth();
@@ -13,6 +14,9 @@ const Write = () => {
 		width: 500,
 		height: 500,
 	});
+	const [isAnounymous, setIsAnounymous] = useState(null);
+	const [isOpen, setIsOpen] = useState(false);
+	const [modalMode, setModalMode] = useState("");
 
 	const [title, setTitle] = useState("");
 	const [stuID, setStuID] = useState("");
@@ -44,60 +48,86 @@ const Write = () => {
 			history.push("/");
 		}
 		try {
-			if (text.length < 1 || title.length < 1) {
-				window.alert("Please fill in all the blanks.");
-			} else {
-				if (window.confirm("Do you want to post?")) {
-					if (
-						window.confirm(
-							"Do you agree to provide your information to RC team for the prize? If you select 'cancel', we do not collect your login information(Completely anounymous)."
-						)
-					) {
-						const docRef = await addDoc(collection(db, "posts"), {
-							uid: auth.currentUser.uid,
-							user: auth.currentUser.email,
-							username: auth.currentUser.displayName,
-							studentid: stuID,
-							title: title,
-							content: text,
-							like: 0,
-							likedusers: [],
-							timestamp: new Date().toDateString(),
-							created: new Date(),
-						});
+			const docRef = await addDoc(collection(db, "posts"), {
+				uid: auth.currentUser.uid,
+				user:
+					isAnounymous == null || isAnounymous
+						? "anounymous"
+						: auth.currentUser.email,
+				username:
+					isAnounymous == null || isAnounymous
+						? "anounymous"
+						: auth.currentUser.displayName,
+				studentid:
+					isAnounymous == null || isAnounymous ? "anounymous" : stuID,
+				title: title,
+				content: text,
+				likedusers: [],
+				timestamp: new Date().toDateString(),
+				created: new Date(),
+			});
 
-						window.alert("Posted!");
-						history.push("/");
-						console.log("Document written with ID: ", docRef.id);
-					} else {
-						const docRef = await addDoc(collection(db, "posts"), {
-							uid: auth.currentUser.uid,
-							user: "anounymous",
-							username: "anounymous",
-							studentid: "anounymous",
-							title: title,
-							content: text,
-							like: 0,
-							likedusers: [],
-							timestamp: new Date().toDateString(),
-							created: new Date(),
-						});
-
-						window.alert("Posted!");
-						history.push("/");
-						console.log("Document written with ID: ", docRef.id);
-					}
-				}
-			}
+			// window.alert("Posted!");
+			history.push("/");
+			console.log("Document written with ID: ", docRef.id);
 		} catch (e) {
 			console.error("Error adding document: ", e);
 		}
 	};
 
-	useEffect(() => {
-		if (auth.currentUser?.email == undefined) {
-			history.push("/");
+	const renderModal = () => {
+		switch (modalMode) {
+			case "is-anounymous":
+				return (
+					<Modal
+						width={windowDimensions.width > 700 ? "50vw" : "80vw"}
+						content="Do you agree to provide your information to RC team for the prize? If you select 'No', we do not collect any of your login information(Completely anounymous)."
+						setIsOpen={setIsOpen}
+						isOpen={isOpen}
+						yes={() => {
+							setIsOpen(false);
+							setIsAnounymous(false);
+						}}
+						no={() => {
+							setIsOpen(false);
+							setIsAnounymous(true);
+							setStuID("anounymous");
+						}}
+					/>
+				);
+
+			case "post":
+				return (
+					<Modal
+						width={windowDimensions.width > 700 ? "50vw" : "80vw"}
+						content="Do you want to post?"
+						setIsOpen={setIsOpen}
+						isOpen={isOpen}
+						yes={() => {
+							setIsOpen(false);
+							createPost();
+						}}
+					/>
+				);
+			case "not-enough":
+				return (
+					<Modal
+						width={windowDimensions.width > 700 ? "50vw" : "80vw"}
+						content="Please fill in all the blanks."
+						setIsOpen={setIsOpen}
+						isOpen={isOpen}
+						okay={() => {
+							setIsOpen(false);
+						}}
+					/>
+				);
 		}
+	};
+
+	useEffect(() => {
+		// if (auth.currentUser?.email == undefined) {
+		// 	history.push("/");
+		// }
 		setWindowDimensions(getWindowDimensions());
 		function handleResize() {
 			setWindowDimensions(getWindowDimensions());
@@ -107,7 +137,9 @@ const Write = () => {
 	}, []);
 
 	return (
-		<div style={{ height: "100vh" }}>
+		// <div style={{ height: "100vh" }}>
+		<>
+			{isOpen && renderModal()}
 			<div
 				style={{
 					display: "flex",
@@ -162,37 +194,62 @@ const Write = () => {
 							value={title}
 						/>
 					</div>
-					<div
-						style={{
-							display: "flex",
-							alignItems: "center",
-							justifyItems: "center",
-							alignContent: "center",
-						}}
-					>
+					{isAnounymous == null ? (
 						<div
 							style={{
+								border: "solid 1.5px darkgray",
+								borderRadius: "7px",
+								paddingTop: "10px",
+								paddingBottom: "10px",
+								marginTop: "10px",
+								cursor: "pointer",
+								boxShadow:
+									"rgba(200, 200, 200, 0.2) 0px 0px 10px 5px",
+								color: "rgba(61, 61, 61, 0.6)",
 								fontSize: "large",
-								fontWeight: "500",
-								padding: "10px",
+								textAlign: "center",
+							}}
+							onClick={() => {
+								setModalMode("is-anounymous");
+								setIsOpen(true);
 							}}
 						>
-							Student ID:
+							Click here! 🎁
 						</div>
+					) : (
+						<div
+							style={{
+								display: "flex",
+								alignItems: "center",
+								justifyItems: "center",
+								alignContent: "center",
+							}}
+						>
+							<div
+								style={{
+									fontSize: "large",
+									fontWeight: "500",
+									padding: "10px",
+								}}
+							>
+								Student ID:
+							</div>
 
-						<input
-							className="input"
-							onChange={handleStuID}
-							value={stuID}
-						/>
-					</div>
+							<input
+								className="input stu"
+								onChange={handleStuID}
+								value={stuID}
+								readOnly={isAnounymous}
+							/>
+						</div>
+					)}
 				</div>
 
 				<textarea
 					style={{
 						marginTop: "10px",
 						border: "solid 1.5px darkgray",
-						borderRadius: "5px",
+						borderRadius: "7px",
 						fontSize: "large",
 						fontWeight: "400",
 						padding: "10px",
@@ -228,13 +285,37 @@ const Write = () => {
 							boxShadow: "rgba(35,196,144, 0.2) 0px 0px 10px 5px",
 							color: "white",
 						}}
-						onClick={createPost}
+						onClick={() => {
+							if (
+								title.length < 1 ||
+								text.length < 1 ||
+								(isAnounymous !== null && stuID.length < 1)
+							) {
+								setModalMode("not-enough");
+							} else {
+								setModalMode("post");
+							}
+							setIsOpen(true);
+						}}
 					>
 						Submit
 					</div>
 				</div>
 			</div>
-		</div>
+			<footer>
+				<div
+					style={{
+						textAlign: "center",
+						fontSize: "smaller",
+						color: "rgba(100, 100, 100, 0.5)",
+						padding: "30px",
+					}}
+				>
+					© 2021. (Kyungbae Min) all rights reserved
+				</div>
+			</footer>
+			{/* </div> */}
+		</>
 	);
 };
 

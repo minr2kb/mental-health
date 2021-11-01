@@ -19,17 +19,21 @@ import { useRecoilState } from "recoil";
 import { provider } from "./firebase";
 import { collection, getDocs, orderBy, query } from "firebase/firestore";
 import { db } from "./firebase";
+import Modal from "./components/Modal";
 
 const Main = () => {
 	let history = useHistory();
 	const auth = getAuth();
 	const [isLoggedIn, setIsLoggedIn] = useState(false);
 	const [isLoaded, setIsLoaded] = useState(false);
+	const [isOpen, setIsOpen] = useState(false);
+	const [modalMode, setModalMode] = useState("");
 	const itemsPerPage = 10;
 	const scrollRef = useRef();
 	const [page, setPage] = useState(1);
 	const [userAgent, setUserAgent] = useState("");
 	const [copied, setCopied] = useState(false);
+
 	const linkInput = useRef();
 
 	const [posts, setPosts] = useRecoilState(postsState);
@@ -101,7 +105,7 @@ const Main = () => {
 	const logOut = () => {
 		signOut(auth)
 			.then(() => {
-				console.log("Sign-out successful");
+				console.log("Sign-out successfully");
 				setIsLoggedIn(false);
 			})
 			.catch(error => {});
@@ -126,6 +130,50 @@ const Main = () => {
 		el.select();
 		navigator.clipboard.writeText(el.value);
 		setCopied(true);
+	};
+
+	const renderModal = () => {
+		switch (modalMode) {
+			case "new-post":
+				return (
+					<Modal
+						width={windowDimensions.width > 700 ? "50vw" : "80vw"}
+						content="To write a new post, you need to sign-in with univ. email. Would you like to login?"
+						setIsOpen={setIsOpen}
+						isOpen={isOpen}
+						yes={() => {
+							setIsOpen(false);
+							logIn(true);
+						}}
+					/>
+				);
+			case "sign-in":
+				return (
+					<Modal
+						width={windowDimensions.width > 700 ? "50vw" : "80vw"}
+						content="Only univ. email will be accepted. ex) john.doe@stonybrook.edu, John.Doe@FITNYC.edu"
+						setIsOpen={setIsOpen}
+						isOpen={isOpen}
+						okay={() => {
+							setIsOpen(false);
+							logIn(false);
+						}}
+					/>
+				);
+			case "sign-out":
+				return (
+					<Modal
+						width={windowDimensions.width > 700 ? "50vw" : "80vw"}
+						content="Do you want to sign-out?"
+						setIsOpen={setIsOpen}
+						isOpen={isOpen}
+						yes={() => {
+							setIsOpen(false);
+							logOut();
+						}}
+					/>
+				);
+		}
 	};
 
 	useEffect(() => {
@@ -154,6 +202,7 @@ const Main = () => {
 
 	return (
 		<div className="App">
+			{isOpen && renderModal()}
 			<h3
 				style={{
 					marginTop: "5rem",
@@ -312,7 +361,10 @@ const Main = () => {
 																700 && "2px",
 													}}
 												>
-													{posts[key].like}
+													{
+														posts[key].likedusers
+															.length
+													}
 												</span>
 											</div>
 										</div>
@@ -330,7 +382,6 @@ const Main = () => {
 						>
 							<div
 								style={{
-									// border: "solid 1px rgba(61, 61, 61, 0.5)",
 									borderRadius: "7px",
 									paddingLeft: "20px",
 									paddingRight: "15px",
@@ -345,13 +396,8 @@ const Main = () => {
 								}}
 								onClick={() => {
 									if (!isLoggedIn) {
-										if (
-											window.confirm(
-												"To write a new post, you need to sign-in with univ. email. Would you like to login?"
-											)
-										) {
-											logIn(true);
-										}
+										setModalMode("new-post");
+										setIsOpen(true);
 									} else {
 										history.push("/write");
 									}
@@ -391,13 +437,8 @@ const Main = () => {
 										width: "5rem",
 									}}
 									onClick={() => {
-										if (
-											window.confirm(
-												"Do you want to sign-out?"
-											)
-										) {
-											logOut();
-										}
+										setModalMode("sign-out");
+										setIsOpen(true);
 									}}
 								>
 									Sign Out
@@ -416,10 +457,8 @@ const Main = () => {
 										width: "5rem",
 									}}
 									onClick={() => {
-										window.alert(
-											"Only univ. email will be accepted. ex) john.doe@stonybrook.edu, John.Doe@FITNYC.edu"
-										);
-										logIn(false);
+										setModalMode("sign-in");
+										setIsOpen(true);
 									}}
 								>
 									Sign In
@@ -445,6 +484,18 @@ const Main = () => {
 					</div>
 				)}
 			</div>
+			<footer>
+				<div
+					style={{
+						textAlign: "center",
+						fontSize: "smaller",
+						color: "rgba(100, 100, 100, 0.5)",
+						paddingBottom: "30px",
+					}}
+				>
+					© 2021. (Kyungbae Min) all rights reserved
+				</div>
+			</footer>
 		</div>
 	);
 };

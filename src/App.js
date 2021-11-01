@@ -41,19 +41,6 @@ function App() {
 					/>
 					<Route component={NoMatch} />
 				</Switch>
-				<footer>
-					<div
-						style={{
-							textAlign: "center",
-							fontSize: "smaller",
-							color: "rgba(100, 100, 100, 0.5)",
-							padding: "30px",
-							// cursor: "pointer",
-						}}
-					>
-						© 2021. (Kyungbae Min) all rights reserved
-					</div>
-				</footer>
 			</div>
 		</Router>
 	);

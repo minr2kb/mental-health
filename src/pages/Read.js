@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import "../App.css";
 import { Link, useHistory } from "react-router-dom";
 import { useRecoilState } from "recoil";
@@ -11,18 +11,28 @@ import {
 	AiOutlineDelete,
 	AiOutlineEdit,
 } from "react-icons/ai";
-import { getAuth } from "firebase/auth";
+import {
+	getAuth,
+	signInWithPopup,
+	GoogleAuthProvider,
+	signOut,
+} from "firebase/auth";
+import { provider } from "./firebase";
 import {
 	doc,
 	updateDoc,
-	increment,
 	arrayUnion,
 	arrayRemove,
 	deleteDoc,
 	getDoc,
+	getDocs,
+	query,
+	addDoc,
 	collection,
+	orderBy,
 } from "firebase/firestore";
 import { db } from "./firebase";
+import Modal from "./components/Modal";
 
 const Read = ({ match }) => {
 	const { id } = match.params;
@@ -32,10 +42,14 @@ const Read = ({ match }) => {
 		width: 500,
 		height: 500,
 	});
-	const [posts, setPosts] = useRecoilState(postsState);
+	const [replies, setReplies] = useState([]);
+	const [currentReplyID, setCurrentReplyID] = useState("");
 	const [liked, setLiked] = useState(false);
 	const [post, setPost] = useState({});
 	const [isLoaded, setIsLoaded] = useState(false);
+	const [isOpen, setIsOpen] = useState(false);
+	const [modalMode, setModalMode] = useState("");
+	const [msg, setMsg] = useState("");
 
 	function getWindowDimensions() {
 		const { innerWidth: width, innerHeight: height } = window;
@@ -45,32 +59,108 @@ const Read = ({ match }) => {
 		};
 	}
 
+	const logIn = () => {
+		// signInWithRedirect(auth, provider).then(() =>
+		// 	getRedirectResult(auth)
+		signInWithPopup(auth, provider)
+			.then(result => {
+				// This gives you a Google Access Token. You can use it to access the Google API.
+				const credential =
+					GoogleAuthProvider.credentialFromResult(result);
+				const token = credential.accessToken;
+				// The signed-in user info.
+				const userData = result.user;
+				if (
+					userData.email.split("@")[1].toLowerCase() ==
+						"stonybrook.edu" ||
+					userData.email.split("@")[1].toLowerCase() ==
+						"fitnyc.edu" ||
+					userData.email.split("@")[1].toLowerCase() ==
+						"sunykorea.ac.kr"
+				) {
+					window.location.reload();
+				} else {
+					window.alert(
+						"Sign-In Failed: Please use university e-mail."
+					);
+					logOut();
+				}
+			})
+			.catch(error => {
+				// Handle Errors here.
+				const errorCode = error.code;
+				const errorMessage = error.message;
+				// The email of the user's account used.
+				const email = error.email;
+				// The AuthCredential type that was used.
+				const credential =
+					GoogleAuthProvider.credentialFromError(error);
+				// ...
+			});
+		// );
+	};
+
+	const logOut = () => {
+		signOut(auth)
+			.then(() => {
+				console.log("Sign-out successfully");
+			})
+			.catch(error => {});
+	};
+
 	const like = () => {
-		if (auth.currentUser?.email == undefined) {
-			window.alert(
-				"You have to sign-in in order to click the like buttons."
-			);
-		} else {
-			updateDoc(doc(db, "posts", id), {
-				like: increment(1),
-				likedusers: arrayUnion(auth.currentUser?.uid),
-			}).then(resp => setLiked(true));
-		}
+		updateDoc(doc(db, "posts", id), {
+			likedusers: arrayUnion(auth.currentUser?.uid),
+		}).then(resp => setLiked(true));
 	};
 
 	const dislike = () => {
 		updateDoc(doc(db, "posts", id), {
-			like: increment(-1),
 			likedusers: arrayRemove(auth.currentUser?.uid),
 		}).then(resp => setLiked(false));
 	};
 
+	const likeReply = replyID => {
+		updateDoc(doc(db, "posts", id, "replies", replyID), {
+			likedusers: arrayUnion(auth.currentUser?.uid),
+		}).then(resp => getReplies());
+	};
+
+	const dislikeReply = replyID => {
+		updateDoc(doc(db, "posts", id, "replies", replyID), {
+			likedusers: arrayRemove(auth.currentUser?.uid),
+		}).then(resp => getReplies());
+	};
+
+	const reply = () => {
+		let newReply = {
+			uid: auth.currentUser?.uid,
+			date:
+				new Date().toDateString() +
+				" " +
+				new Date().toTimeString().split(" ")[0],
+			content: msg,
+			likedusers: [],
+			created: new Date(),
+		};
+
+		addDoc(collection(db, "posts", id, "replies"), newReply).then(resp =>
+			setReplies([{ id: resp.id, ...newReply }, ...replies])
+		);
+	};
+
 	const deletePost = () => {
-		if (window.confirm("Do you really want to delete this post?")) {
-			deleteDoc(doc(db, "posts", id)).then(resp => {
-				history.push("/");
-			});
-		}
+		deleteDoc(doc(db, "posts", id)).then(resp => {
+			history.push("/");
+		});
+	};
+
+	const deleteReply = () => {
+		deleteDoc(doc(db, "posts", id, "replies", currentReplyID)).then(
+			resp => {
+				getReplies();
+			}
+		);
 	};
 
 	const getPost = () => {
@@ -84,13 +174,91 @@ const Read = ({ match }) => {
 			) {
 				setLiked(true);
 			}
+
+			getReplies();
+		});
+	};
+
+	const getReplies = () => {
+		let docs = [];
+		getDocs(
+			query(
+				collection(db, "posts", id, "replies"),
+				orderBy("created", "desc")
+			)
+		).then(snapshots => {
+			snapshots.forEach(doc => {
+				docs.push({ id: doc.id, ...doc.data() });
+			});
+			setReplies(docs);
 			setIsLoaded(true);
 		});
 	};
 
+	const handleOnChange = e => {
+		setMsg(e.target.value);
+	};
+
+	const renderModal = () => {
+		switch (modalMode) {
+			case "unauthorized-like":
+				return (
+					<Modal
+						width={windowDimensions.width > 700 ? "50vw" : "80vw"}
+						content="To press like, you need to sign-in with univ. email. Would you like to login?"
+						setIsOpen={setIsOpen}
+						isOpen={isOpen}
+						yes={() => {
+							setIsOpen(false);
+							logIn();
+						}}
+					/>
+				);
+			case "unauthorized-reply":
+				return (
+					<Modal
+						width={windowDimensions.width > 700 ? "50vw" : "80vw"}
+						content="To reply to this post, you need to sign-in with univ. email. Would you like to login?"
+						setIsOpen={setIsOpen}
+						isOpen={isOpen}
+						yes={() => {
+							setIsOpen(false);
+							logIn();
+						}}
+					/>
+				);
+
+			case "delete":
+				return (
+					<Modal
+						width={windowDimensions.width > 700 ? "50vw" : "80vw"}
+						content="Do you want to delete this post?"
+						setIsOpen={setIsOpen}
+						isOpen={isOpen}
+						yes={() => {
+							setIsOpen(false);
+							deletePost();
+						}}
+					/>
+				);
+			case "delete-reply":
+				return (
+					<Modal
+						width={windowDimensions.width > 700 ? "50vw" : "80vw"}
+						content="Do you want to delete this reply?"
+						setIsOpen={setIsOpen}
+						isOpen={isOpen}
+						yes={() => {
+							setIsOpen(false);
+							deleteReply();
+						}}
+					/>
+				);
+		}
+	};
+
 	useEffect(() => {
 		getPost();
-
 		setWindowDimensions(getWindowDimensions());
 		function handleResize() {
 			setWindowDimensions(getWindowDimensions());
@@ -100,7 +268,8 @@ const Read = ({ match }) => {
 	}, []);
 
 	return (
-		<div style={{ height: "90vh" }}>
+		<>
+			{isOpen && renderModal()}
 			<div
 				style={{
 					display: "flex",
@@ -114,7 +283,7 @@ const Read = ({ match }) => {
 					WebkitOverflowScrolling: "touch",
 					padding: windowDimensions.width > 700 ? "40px" : "20px",
 					width: windowDimensions.width > 700 ? "60vw" : "85vw",
-					height: "80vh",
+					// height: "80vh",
 					boxShadow:
 						windowDimensions.width > 700 &&
 						"rgba(138, 138, 138, 0.1) -3px 3px 10px 5px",
@@ -202,7 +371,10 @@ const Read = ({ match }) => {
 												cursor: "pointer",
 												marginRight: "5px",
 											}}
-											onClick={deletePost}
+											onClick={() => {
+												setModalMode("delete");
+												setIsOpen(true);
+											}}
 										>
 											{windowDimensions.width > 700 && (
 												<div style={{ padding: "3px" }}>
@@ -221,7 +393,18 @@ const Read = ({ match }) => {
 											padding: "5px",
 											cursor: "pointer",
 										}}
-										onClick={liked ? dislike : like}
+										onClick={
+											auth.currentUser?.email == undefined
+												? () => {
+														setModalMode(
+															"unauthorized-like"
+														);
+														setIsOpen(true);
+												  }
+												: liked
+												? dislike
+												: like
+										}
 									>
 										{windowDimensions.width > 700 && (
 											<div style={{ padding: "3px" }}>
@@ -243,25 +426,185 @@ const Read = ({ match }) => {
 								width: "100%",
 							}}
 						>
-							<textarea
+							<div
 								style={{
-									outline: "none",
-									border: "none",
-									// borderTop: "solid 1.5px grey",
+									textAlign: "start",
 									fontSize: "large",
 									fontWeight: "400",
 									padding: "10px",
-									height: "60vh",
-									width: "calc(100% - 20px)",
-									resize: "none",
+									marginBottom: "50px",
 									fontFamily:
 										"-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif",
 									lineHeight: "130%",
+									whiteSpace: "pre-wrap",
 								}}
-								readOnly={true}
-								value={post?.content}
-							/>
+							>
+								{post?.content}
+							</div>
 						</div>
+						<div
+							style={{
+								display: windowDimensions.width > 700 && "flex",
+								width: "100%",
+								justifyContent: "center",
+								alignItems: "center",
+							}}
+							onClick={
+								auth.currentUser?.email == undefined
+									? () => {
+											setModalMode("unauthorized-reply");
+											setIsOpen(true);
+									  }
+									: () => {}
+							}
+						>
+							<input
+								className="input"
+								style={{
+									width:
+										windowDimensions.width > 700
+											? "40vw"
+											: "85vw",
+								}}
+								onChange={handleOnChange}
+								value={msg}
+								placeholder="Reply"
+								disabled={auth.currentUser?.email == undefined}
+							/>
+							<div
+								style={{
+									borderRadius: "7px",
+									paddingLeft: "20px",
+									paddingRight: "20px",
+									paddingTop: "10px",
+									paddingBottom: "10px",
+									cursor: "pointer",
+									backgroundColor: "rgb(35,196,144)",
+									boxShadow:
+										"rgba(35,196,144, 0.2) 0px 0px 10px 5px",
+									color: "white",
+
+									margin: "10px",
+									marginTop:
+										windowDimensions.width <= 700 && "10px",
+								}}
+								onClick={
+									auth.currentUser?.email == undefined
+										? () => {}
+										: reply
+								}
+							>
+								Send
+							</div>
+						</div>
+						{replies.map((reply, idx) => (
+							<div
+								className="reply"
+								style={{
+									display: "flex",
+									justifyContent: "space-between",
+									alignItems: "center",
+								}}
+								key={reply.date}
+							>
+								<div>
+									<div
+										style={{
+											fontSize: "small",
+											marginBottom: "5px",
+										}}
+									>
+										{reply.date}
+									</div>
+									<div
+										style={{
+											fontSize: "medium",
+											fontWeight: "500",
+										}}
+									>
+										{reply.content}
+									</div>
+								</div>
+								<div
+									style={{
+										fontSize: "small",
+										display: "flex",
+										flexDirection:
+											windowDimensions.width <= 700 &&
+											"column",
+										alignItems: "center",
+										justifyItems: "center",
+									}}
+								>
+									{reply.uid == auth.currentUser?.uid ? (
+										<AiOutlineDelete
+											style={{
+												cursor: "pointer",
+											}}
+											size={17}
+											onClick={() => {
+												setCurrentReplyID(reply.id);
+												setModalMode("delete-reply");
+												setIsOpen(true);
+											}}
+										/>
+									) : (
+										<>
+											{reply.likedusers.includes(
+												auth.currentUser?.uid
+											) ? (
+												<AiFillHeart
+													style={{
+														cursor: "pointer",
+														color: "coral",
+													}}
+													onClick={
+														auth.currentUser
+															?.email == undefined
+															? () => {
+																	setModalMode(
+																		"unauthorized-like"
+																	);
+																	setIsOpen(
+																		true
+																	);
+															  }
+															: () =>
+																	dislikeReply(
+																		reply.id
+																	)
+													}
+												/>
+											) : (
+												<AiOutlineHeart
+													style={{
+														cursor: "pointer",
+														marginTop: "1px",
+													}}
+													onClick={
+														auth.currentUser
+															?.email == undefined
+															? () => {
+																	setModalMode(
+																		"unauthorized-like"
+																	);
+																	setIsOpen(
+																		true
+																	);
+															  }
+															: () =>
+																	likeReply(
+																		reply.id
+																	)
+													}
+												/>
+											)}
+											<div>{reply.likedusers.length}</div>
+										</>
+									)}
+								</div>
+							</div>
+						))}
 					</>
 				) : (
 					<div
@@ -277,7 +620,19 @@ const Read = ({ match }) => {
 					</div>
 				)}
 			</div>
-		</div>
+			<footer>
+				<div
+					style={{
+						textAlign: "center",
+						fontSize: "smaller",
+						color: "rgba(100, 100, 100, 0.5)",
+						padding: "30px",
+					}}
+				>
+					© 2021. (Kyungbae Min) all rights reserved
+				</div>
+			</footer>
+		</>
 	);
 };
 

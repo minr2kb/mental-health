@@ -8,6 +8,7 @@ import { useRecoilState } from "recoil";
 import { postsState } from "../recoilStates";
 import { doc, updateDoc, getDoc } from "firebase/firestore";
 import { db } from "./firebase";
+import Modal from "./components/Modal";
 
 const Edit = ({ match }) => {
 	const { id } = match.params;
@@ -22,8 +23,10 @@ const Edit = ({ match }) => {
 	const [stuID, setStuID] = useState("");
 	const [text, setText] = useState("");
 	const [isLoaded, setIsLoaded] = useState(false);
-
 	const [posts, setPosts] = useRecoilState(postsState);
+	const [isAnounymous, setIsAnounymous] = useState(null);
+	const [isOpen, setIsOpen] = useState(false);
+	const [modalMode, setModalMode] = useState("");
 
 	function getWindowDimensions() {
 		const { innerWidth: width, innerHeight: height } = window;
@@ -52,12 +55,21 @@ const Edit = ({ match }) => {
 		}
 		updateDoc(doc(db, "posts", id), {
 			content: text,
-			studentid: stuID,
 			title: title,
+			user:
+				isAnounymous == null || isAnounymous
+					? "anounymous"
+					: auth.currentUser.email,
+			username:
+				isAnounymous == null || isAnounymous
+					? "anounymous"
+					: auth.currentUser.displayName,
+			studentid:
+				isAnounymous == null || isAnounymous ? "anounymous" : stuID,
 			timestamp: new Date().toDateString(),
 			created: new Date(),
 		}).then(resp => {
-			window.alert("Saved all changes!");
+			// window.alert("Saved all changes!");
 			history.push("/");
 		});
 	};
@@ -71,6 +83,55 @@ const Edit = ({ match }) => {
 		});
 	};
 
+	const renderModal = () => {
+		switch (modalMode) {
+			case "is-anounymous":
+				return (
+					<Modal
+						width={windowDimensions.width > 700 ? "50vw" : "80vw"}
+						content="Do you agree to provide your information to RC team for the prize? If you select 'No', we do not collect any of your login information(Completely anounymous)."
+						setIsOpen={setIsOpen}
+						isOpen={isOpen}
+						yes={() => {
+							setIsOpen(false);
+							setIsAnounymous(false);
+							setStuID("");
+						}}
+						no={() => {
+							setIsOpen(false);
+							setIsAnounymous(true);
+							setStuID("anounymous");
+						}}
+					/>
+				);
+			case "update":
+				return (
+					<Modal
+						width={windowDimensions.width > 700 ? "50vw" : "80vw"}
+						content="Do you want to update?"
+						setIsOpen={setIsOpen}
+						isOpen={isOpen}
+						yes={() => {
+							setIsOpen(false);
+							updatePost();
+						}}
+					/>
+				);
+			case "not-enough":
+				return (
+					<Modal
+						width={windowDimensions.width > 700 ? "50vw" : "80vw"}
+						content="Please fill in all the blanks."
+						setIsOpen={setIsOpen}
+						isOpen={isOpen}
+						okay={() => {
+							setIsOpen(false);
+						}}
+					/>
+				);
+		}
+	};
+
 	useEffect(() => {
 		getPost();
 		setWindowDimensions(getWindowDimensions());
@@ -82,7 +143,9 @@ const Edit = ({ match }) => {
 	}, []);
 
 	return (
-		<div style={{ height: "100vh" }}>
+		// <div style={{ height: "100vh" }}>
+		<>
+			{isOpen && renderModal()}
 			<div
 				style={{
 					display: "flex",
@@ -146,9 +209,6 @@ const Edit = ({ match }) => {
 							<div
 								style={{
 									display: "flex",
-									alignItems: "center",
-									justifyItems: "center",
-									alignContent: "center",
 								}}
 							>
 								<div
@@ -160,19 +220,40 @@ const Edit = ({ match }) => {
 								>
 									Student ID:
 								</div>
-
-								<input
-									className="input"
-									onChange={handleStuID}
-									value={stuID}
-								/>
+								<div
+									style={{
+										display: "flex",
+										flexDirection: "column",
+										width: "40%",
+										alignItems: "center",
+									}}
+								>
+									<input
+										className="input stu"
+										onChange={handleStuID}
+										value={stuID}
+										readOnly={isAnounymous}
+									/>
+									<div
+										style={{
+											color: "rgb(35,196,144)",
+											cursor: "pointer",
+										}}
+										onClick={() => {
+											setModalMode("is-anounymous");
+											setIsOpen(true);
+										}}
+									>
+										change
+									</div>
+								</div>
 							</div>
 						</div>
 
 						<textarea
 							style={{
 								border: "solid 1.5px darkgray",
-								borderRadius: "5px",
+								borderRadius: "7px",
 								marginTop: "10px",
 								fontSize: "large",
 								fontWeight: "400",
@@ -210,7 +291,19 @@ const Edit = ({ match }) => {
 										"rgba(35,196,144, 0.2) 0px 0px 10px 5px",
 									color: "white",
 								}}
-								onClick={updatePost}
+								onClick={() => {
+									if (
+										title.length < 1 ||
+										text.length < 1 ||
+										(isAnounymous !== null &&
+											stuID.length < 1)
+									) {
+										setModalMode("not-enough");
+									} else {
+										setModalMode("update");
+									}
+									setIsOpen(true);
+								}}
 							>
 								Save
 							</div>
@@ -230,7 +323,19 @@ const Edit = ({ match }) => {
 					</div>
 				)}
 			</div>
-		</div>
+			<footer>
+				<div
+					style={{
+						textAlign: "center",
+						fontSize: "smaller",
+						color: "rgba(100, 100, 100, 0.5)",
+						paddingBottom: "30px",
+					}}
+				>
+					© 2021. (Kyungbae Min) all rights reserved
+				</div>
+			</footer>
+		</>
 	);
 };
 
