@@ -68,7 +68,10 @@ const Main = () => {
 				if (
 					userData.email.split("@")[1].toLowerCase() ==
 						"stonybrook.edu" ||
-					userData.email.split("@")[1].toLowerCase() == "fitnyc.edu"
+					userData.email.split("@")[1].toLowerCase() ==
+						"fitnyc.edu" ||
+					userData.email.split("@")[1].toLowerCase() ==
+						"sunykorea.ac.kr"
 				) {
 					setIsLoggedIn(true);
 					if (isPosting) {
@@ -412,7 +415,12 @@ const Main = () => {
 										color: "rgb(35,196,144)",
 										width: "5rem",
 									}}
-									onClick={() => logIn(false)}
+									onClick={() => {
+										window.alert(
+											"Only univ. email will be accepted. ex) john.doe@stonybrook.edu, John.Doe@FITNYC.edu"
+										);
+										logIn(false);
+									}}
 								>
 									Sign In
 								</div>

@@ -56,7 +56,6 @@ const Write = () => {
 						const docRef = await addDoc(collection(db, "posts"), {
 							uid: auth.currentUser.uid,
 							user: auth.currentUser.email,
-
 							username: auth.currentUser.displayName,
 							studentid: stuID,
 							title: title,
