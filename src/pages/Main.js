@@ -213,7 +213,7 @@ const Main = () => {
 						width: "100%",
 					}}
 				>
-					<div>{auth.currentUser?.displayName}</div>
+					<b>{auth.currentUser?.displayName}</b>
 					{isLoggedIn ? (
 						<div
 							style={{
@@ -261,7 +261,7 @@ const Main = () => {
 
 			<h3
 				style={{
-					marginTop: "2rem",
+					// marginTop: "2rem",
 					marginBottom: 0,
 					cursor: "pointer",
 				}}
