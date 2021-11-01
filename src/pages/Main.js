@@ -82,10 +82,10 @@ const Main = () => {
 						history.push("/write");
 					}
 				} else {
+					logOut();
 					window.alert(
 						"Sign-In Failed: Please use university e-mail."
 					);
-					logOut();
 				}
 			})
 			.catch(error => {

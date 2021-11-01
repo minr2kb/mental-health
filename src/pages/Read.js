@@ -80,10 +80,10 @@ const Read = ({ match }) => {
 				) {
 					window.location.reload();
 				} else {
+					logOut();
 					window.alert(
 						"Sign-In Failed: Please use university e-mail."
 					);
-					logOut();
 				}
 			})
 			.catch(error => {
@@ -144,9 +144,10 @@ const Read = ({ match }) => {
 			created: new Date(),
 		};
 
-		addDoc(collection(db, "posts", id, "replies"), newReply).then(resp =>
-			setReplies([{ id: resp.id, ...newReply }, ...replies])
-		);
+		addDoc(collection(db, "posts", id, "replies"), newReply).then(resp => {
+			setReplies([{ id: resp.id, ...newReply }, ...replies]);
+			setMsg("");
+		});
 	};
 
 	const deletePost = () => {
@@ -384,39 +385,42 @@ const Read = ({ match }) => {
 											<AiOutlineDelete />
 										</div>
 									)}
-									<div
-										style={{
-											display: "flex",
-											alignItems: "center",
-											border: "solid 1px rgba(61, 61, 61, 0.5)",
-											borderRadius: "8px",
-											padding: "5px",
-											cursor: "pointer",
-										}}
-										onClick={
-											auth.currentUser?.email == undefined
-												? () => {
-														setModalMode(
-															"unauthorized-like"
-														);
-														setIsOpen(true);
-												  }
-												: liked
-												? dislike
-												: like
-										}
-									>
-										{windowDimensions.width > 700 && (
-											<div style={{ padding: "3px" }}>
-												Like
-											</div>
-										)}
-										{liked ? (
-											<AiFillHeart color="coral" />
-										) : (
-											<AiOutlineHeart />
-										)}
-									</div>
+									{post?.uid !== auth.currentUser?.uid && (
+										<div
+											style={{
+												display: "flex",
+												alignItems: "center",
+												border: "solid 1px rgba(61, 61, 61, 0.5)",
+												borderRadius: "8px",
+												padding: "5px",
+												cursor: "pointer",
+											}}
+											onClick={
+												auth.currentUser?.email ==
+												undefined
+													? () => {
+															setModalMode(
+																"unauthorized-like"
+															);
+															setIsOpen(true);
+													  }
+													: liked
+													? dislike
+													: like
+											}
+										>
+											{windowDimensions.width > 700 && (
+												<div style={{ padding: "3px" }}>
+													Like
+												</div>
+											)}
+											{liked ? (
+												<AiFillHeart color="coral" />
+											) : (
+												<AiOutlineHeart />
+											)}
+										</div>
+									)}
 								</div>
 							</div>
 						</div>

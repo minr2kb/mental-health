@@ -21,6 +21,7 @@ const Modal = ({
 				backgroundColor: "rgba(0,0,0,0.3)",
 				justifyContent: "center",
 				alignItems: "center",
+				zIndex: 1,
 			}}
 			onClick={() => inevitable || setIsOpen(!isOpen)}
 		>
