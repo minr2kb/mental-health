@@ -519,6 +519,9 @@ const Read = ({ match }) => {
 										}}
 									>
 										{reply.date}
+										{reply.uid == post?.uid && (
+											<b> (Author)</b>
+										)}
 									</div>
 									<div
 										style={{
