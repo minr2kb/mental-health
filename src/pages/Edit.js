@@ -224,7 +224,7 @@ const Edit = ({ match }) => {
 									style={{
 										display: "flex",
 										flexDirection: "column",
-										width: "40%",
+										width: "50%",
 										alignItems: "center",
 									}}
 								>
@@ -244,7 +244,7 @@ const Edit = ({ match }) => {
 											setIsOpen(true);
 										}}
 									>
-										change
+										privacy change
 									</div>
 								</div>
 							</div>

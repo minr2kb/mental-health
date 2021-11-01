@@ -203,9 +203,62 @@ const Main = () => {
 	return (
 		<div className="App">
 			{isOpen && renderModal()}
+			<div
+				style={{
+					display: "flex",
+					alignItems: "center",
+					justifyContent: "flex-end",
+					marginTop: "1rem",
+					width: "100%",
+				}}
+			>
+				{isLoggedIn ? (
+					<div
+						style={{
+							// border: "solid 1px rgba(61, 61, 61, 0.5)",
+							borderRadius: "7px",
+							paddingLeft: "10px",
+							// paddingRight: "15px",
+							paddingTop: "10px",
+							paddingBottom: "10px",
+							cursor: "pointer",
+
+							color: "rgb(35,196,144)",
+							width: "5rem",
+						}}
+						onClick={() => {
+							setModalMode("sign-out");
+							setIsOpen(true);
+						}}
+					>
+						Sign Out
+					</div>
+				) : (
+					<div
+						style={{
+							borderRadius: "7px",
+							paddingLeft: "10px",
+							// paddingRight: "15px",
+							paddingTop: "10px",
+							paddingBottom: "10px",
+							cursor: "pointer",
+
+							color: "rgb(35,196,144)",
+							width: "5rem",
+						}}
+						onClick={() => {
+							setModalMode("sign-in");
+							setIsOpen(true);
+						}}
+					>
+						Sign In
+					</div>
+				)}
+			</div>
+
 			<h3
 				style={{
-					marginTop: "5rem",
+					marginTop: "2rem",
 					marginBottom: 0,
 					cursor: "pointer",
 				}}
@@ -415,59 +468,7 @@ const Main = () => {
 							nextPageText={"›"}
 							onChange={handlePageChange}
 						/>
-						<div
-							style={{
-								display: "flex",
-								justifyContent: "center",
-								marginBottom: "5px",
-							}}
-						>
-							{isLoggedIn ? (
-								<div
-									style={{
-										// border: "solid 1px rgba(61, 61, 61, 0.5)",
-										borderRadius: "7px",
-										paddingLeft: "15px",
-										paddingRight: "15px",
-										paddingTop: "10px",
-										paddingBottom: "10px",
-										cursor: "pointer",
-
-										color: "rgb(35,196,144)",
-										width: "5rem",
-									}}
-									onClick={() => {
-										setModalMode("sign-out");
-										setIsOpen(true);
-									}}
-								>
-									Sign Out
-								</div>
-							) : (
-								<div
-									style={{
-										borderRadius: "7px",
-										paddingLeft: "15px",
-										paddingRight: "15px",
-										paddingTop: "10px",
-										paddingBottom: "10px",
-										cursor: "pointer",
-
-										color: "rgb(35,196,144)",
-										width: "5rem",
-									}}
-									onClick={() => {
-										setModalMode("sign-in");
-										setIsOpen(true);
-									}}
-								>
-									Sign In
-								</div>
-							)}
-						</div>
-						<div style={{ marginBottom: "30px" }}>
-							{auth.currentUser?.email}
-						</div>
+						<div>{auth.currentUser?.email}</div>
 						{/* <div
 							style={{
 								marginBottom: "30px",

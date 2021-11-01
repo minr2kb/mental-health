@@ -121,6 +121,18 @@ const Write = () => {
 						}}
 					/>
 				);
+			case "no-privacy":
+				return (
+					<Modal
+						width={windowDimensions.width > 700 ? "50vw" : "80vw"}
+						content="Please set the privacy."
+						setIsOpen={setIsOpen}
+						isOpen={isOpen}
+						okay={() => {
+							setIsOpen(false);
+						}}
+					/>
+				);
 		}
 	};
 
@@ -197,28 +209,6 @@ const Write = () => {
 					{isAnounymous == null ? (
 						<div
 							style={{
-								border: "solid 1.5px darkgray",
-								borderRadius: "7px",
-								paddingTop: "10px",
-								paddingBottom: "10px",
-								marginTop: "10px",
-								cursor: "pointer",
-								boxShadow:
-									"rgba(200, 200, 200, 0.2) 0px 0px 10px 5px",
-								color: "rgba(61, 61, 61, 0.6)",
-								fontSize: "large",
-								textAlign: "center",
-							}}
-							onClick={() => {
-								setModalMode("is-anounymous");
-								setIsOpen(true);
-							}}
-						>
-							Click here! 🎁
-						</div>
-					) : (
-						<div
-							style={{
 								display: "flex",
 								alignItems: "center",
 								justifyItems: "center",
@@ -235,12 +225,72 @@ const Write = () => {
 								Student ID:
 							</div>
 
-							<input
-								className="input stu"
-								onChange={handleStuID}
-								value={stuID}
-								readOnly={isAnounymous}
-							/>
+							<div
+								style={{
+									// border: "solid 1.5px darkgray",
+									borderRadius: "7px",
+									paddingTop: "10px",
+									paddingBottom: "10px",
+									// marginTop: "10px",
+									cursor: "pointer",
+									// boxShadow:
+									// 	"rgba(200, 200, 200, 0.2) 0px 0px 10px 5px",
+									// color: "rgba(61, 61, 61, 0.6)",
+									color: "rgb(35,196,144)",
+									fontSize: "large",
+									textAlign: "center",
+									textDecoration: "underline",
+								}}
+								onClick={() => {
+									setModalMode("is-anounymous");
+									setIsOpen(true);
+								}}
+							>
+								Set Privacy
+							</div>
+						</div>
+					) : (
+						<div
+							style={{
+								display: "flex",
+							}}
+						>
+							<div
+								style={{
+									fontSize: "large",
+									fontWeight: "500",
+									padding: "10px",
+								}}
+							>
+								Student ID:
+							</div>
+							<div
+								style={{
+									display: "flex",
+									flexDirection: "column",
+									width: "50%",
+									alignItems: "center",
+								}}
+							>
+								<input
+									className="input stu"
+									onChange={handleStuID}
+									value={stuID}
+									readOnly={isAnounymous}
+								/>
+								<div
+									style={{
+										color: "rgb(35,196,144)",
+										cursor: "pointer",
+									}}
+									onClick={() => {
+										setModalMode("is-anounymous");
+										setIsOpen(true);
+									}}
+								>
+									privacy change
+								</div>
+							</div>
 						</div>
 					)}
 				</div>
@@ -286,10 +336,12 @@ const Write = () => {
 							color: "white",
 						}}
 						onClick={() => {
-							if (
+							if (isAnounymous == null) {
+								setModalMode("no-privacy");
+							} else if (
 								title.length < 1 ||
 								text.length < 1 ||
-								(isAnounymous !== null && stuID.length < 1)
+								stuID.length < 1
 							) {
 								setModalMode("not-enough");
 							} else {
