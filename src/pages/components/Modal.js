@@ -1,4 +1,5 @@
 import React from "react";
+import ReactMarkdown from "react-markdown";
 
 const Modal = ({
 	width,
@@ -52,7 +53,11 @@ const Modal = ({
 							textAlign: "start",
 						}}
 					>
-						{content}
+						{content.split("//").map(sentence => (
+							<div key={sentence}>
+								<ReactMarkdown>{sentence}</ReactMarkdown>
+							</div>
+						))}
 					</div>
 					<div
 						style={{

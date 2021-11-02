@@ -200,13 +200,19 @@ const Read = ({ match }) => {
 		setMsg(e.target.value);
 	};
 
+	const enter = e => {
+		if (e.key === "Enter") {
+			reply();
+		}
+	};
+
 	const renderModal = () => {
 		switch (modalMode) {
 			case "unauthorized-like":
 				return (
 					<Modal
 						width={windowDimensions.width > 700 ? "50vw" : "80vw"}
-						content="To press like, you need to sign-in with univ. email. Would you like to login?"
+						content="To press like, you need to sign-in with **univ. email**. Would you like to login?"
 						setIsOpen={setIsOpen}
 						isOpen={isOpen}
 						yes={() => {
@@ -219,7 +225,7 @@ const Read = ({ match }) => {
 				return (
 					<Modal
 						width={windowDimensions.width > 700 ? "50vw" : "80vw"}
-						content="To reply to this post, you need to sign-in with univ. email. Would you like to login?"
+						content="To reply to this post, you need to sign-in with **univ. email**. Would you like to login?"
 						setIsOpen={setIsOpen}
 						isOpen={isOpen}
 						yes={() => {
@@ -361,30 +367,39 @@ const Read = ({ match }) => {
 											<AiOutlineEdit />
 										</div>
 									)}
-									{post?.uid == auth.currentUser?.uid && (
-										<div
-											style={{
-												display: "flex",
-												alignItems: "center",
-												border: "solid 1px rgba(61, 61, 61, 0.5)",
-												borderRadius: "8px",
-												padding: "5px",
-												cursor: "pointer",
-												marginRight: "5px",
-											}}
-											onClick={() => {
-												setModalMode("delete");
-												setIsOpen(true);
-											}}
-										>
-											{windowDimensions.width > 700 && (
-												<div style={{ padding: "3px" }}>
-													Delete
-												</div>
-											)}
-											<AiOutlineDelete />
-										</div>
-									)}
+									{post?.uid == auth.currentUser?.uid ||
+										(auth.currentUser?.email
+											.split("@")[1]
+											.toLowerCase() ==
+											"sunykorea.ac.kr" && (
+											<div
+												style={{
+													display: "flex",
+													alignItems: "center",
+													border: "solid 1px rgba(61, 61, 61, 0.5)",
+													borderRadius: "8px",
+													padding: "5px",
+													cursor: "pointer",
+													marginRight: "5px",
+												}}
+												onClick={() => {
+													setModalMode("delete");
+													setIsOpen(true);
+												}}
+											>
+												{windowDimensions.width >
+													700 && (
+													<div
+														style={{
+															padding: "3px",
+														}}
+													>
+														Delete
+													</div>
+												)}
+												<AiOutlineDelete />
+											</div>
+										))}
 									{post?.uid !== auth.currentUser?.uid && (
 										<div
 											style={{
@@ -471,6 +486,7 @@ const Read = ({ match }) => {
 											: "85vw",
 								}}
 								onChange={handleOnChange}
+								onKeyPress={enter}
 								value={msg}
 								placeholder="Reply"
 								disabled={auth.currentUser?.email == undefined}
@@ -543,7 +559,10 @@ const Read = ({ match }) => {
 										justifyItems: "center",
 									}}
 								>
-									{reply.uid == auth.currentUser?.uid ? (
+									{reply.uid == auth.currentUser?.uid ||
+									auth.currentUser?.email
+										.split("@")[1]
+										.toLowerCase() == "sunykorea.ac.kr" ? (
 										<AiOutlineDelete
 											style={{
 												cursor: "pointer",

@@ -81,7 +81,7 @@ const Write = () => {
 				return (
 					<Modal
 						width={windowDimensions.width > 700 ? "50vw" : "80vw"}
-						content="Do you agree to provide your information to RC team for the prize? If you select 'No', we do not collect any of your login information(Completely anounymous)."
+						content="Do you agree to provide your information to **ONLY RC team** for the prize? // - If you select '**No**', we do not collect any of your login information(*Completely anounymous*). //- If you select '**Yes**', you may selected as winner and your writing may be discussed through the video later. (*Anounymous to students*)"
 						setIsOpen={setIsOpen}
 						isOpen={isOpen}
 						yes={() => {
@@ -147,6 +147,16 @@ const Write = () => {
 		window.addEventListener("resize", handleResize);
 		return () => window.removeEventListener("resize", handleResize);
 	}, []);
+
+	useEffect(() => {
+		if (isAnounymous) {
+			console.log("anounymous");
+			setStuID("anounymous");
+		} else {
+			console.log("not anounymous");
+			setStuID("");
+		}
+	}, [isAnounymous]);
 
 	return (
 		// <div style={{ height: "100vh" }}>
@@ -276,6 +286,7 @@ const Write = () => {
 									className="input stu"
 									onChange={handleStuID}
 									value={stuID}
+									placeholder="Enter student ID"
 									readOnly={isAnounymous}
 								/>
 								<div
@@ -312,7 +323,7 @@ const Write = () => {
 					}}
 					value={text}
 					onChange={handleText}
-					placeholder={`- Writer's information will not be displayed on the post. \n\n- You can also write in Korean. \n\n- You can edit or delete after posting. \n\n- Do not write someone's name.`}
+					placeholder={`- Writer's information will not be displayed on the post. \n\n- You can also write in Korean. \n\n- You can edit or delete after posting. \n\n- Please refrain from swearing and slander against others and do not mention any names.`}
 				/>
 				<div
 					style={{

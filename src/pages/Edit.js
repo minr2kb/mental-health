@@ -89,7 +89,7 @@ const Edit = ({ match }) => {
 				return (
 					<Modal
 						width={windowDimensions.width > 700 ? "50vw" : "80vw"}
-						content="Do you agree to provide your information to RC team for the prize? If you select 'No', we do not collect any of your login information(Completely anounymous)."
+						content="Do you agree to provide your information to **ONLY RC team** for the prize? // - If you select '**No**', we do not collect any of your login information(*Completely anounymous*). //- If you select '**Yes**', you may selected as winner and your writing may be discussed through the video later. (*Anounymous to students*)"
 						setIsOpen={setIsOpen}
 						isOpen={isOpen}
 						yes={() => {
@@ -141,6 +141,16 @@ const Edit = ({ match }) => {
 		window.addEventListener("resize", handleResize);
 		return () => window.removeEventListener("resize", handleResize);
 	}, []);
+
+	useEffect(() => {
+		if (isAnounymous) {
+			console.log("anounymous");
+			setStuID("anounymous");
+		} else {
+			console.log("not anounymous");
+			setStuID("");
+		}
+	}, [isAnounymous]);
 
 	return (
 		// <div style={{ height: "100vh" }}>
@@ -233,6 +243,7 @@ const Edit = ({ match }) => {
 										onChange={handleStuID}
 										value={stuID}
 										readOnly={isAnounymous}
+										placeholder="Enter student ID"
 									/>
 									<div
 										style={{

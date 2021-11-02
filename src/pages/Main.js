@@ -20,6 +20,7 @@ import { provider } from "./firebase";
 import { collection, getDocs, orderBy, query } from "firebase/firestore";
 import { db } from "./firebase";
 import Modal from "./components/Modal";
+import titleIMG from "../assets/title.png";
 
 const Main = () => {
 	let history = useHistory();
@@ -138,7 +139,7 @@ const Main = () => {
 				return (
 					<Modal
 						width={windowDimensions.width > 700 ? "50vw" : "80vw"}
-						content="To write a new post, you need to sign-in with univ. email. Would you like to login?"
+						content="To write a new post, you need to sign-in with **univ. email**. Would you like to login?"
 						setIsOpen={setIsOpen}
 						isOpen={isOpen}
 						yes={() => {
@@ -151,7 +152,7 @@ const Main = () => {
 				return (
 					<Modal
 						width={windowDimensions.width > 700 ? "50vw" : "80vw"}
-						content="Only univ. email will be accepted. ex) john.doe@stonybrook.edu, John.Doe@FITNYC.edu"
+						content="Only **univ. email** will be accepted. // ex) john.doe **@stonybrook.edu**, John.Doe **@FITNYC.edu**"
 						setIsOpen={setIsOpen}
 						isOpen={isOpen}
 						okay={() => {
@@ -213,7 +214,11 @@ const Main = () => {
 						width: "100%",
 					}}
 				>
-					<b>{auth.currentUser?.displayName}</b>
+					<b>
+						{auth.currentUser?.displayName}
+						{auth.currentUser?.email.split("@")[1].toLowerCase() ==
+							"sunykorea.ac.kr" && " (admin)"}
+					</b>
 					{isLoggedIn ? (
 						<div
 							style={{
@@ -264,11 +269,12 @@ const Main = () => {
 					// marginTop: "2rem",
 					marginBottom: 0,
 					cursor: "pointer",
+					// color: "rgb(100,100,100)",
 				}}
 			>
-				2021F RC Event
+				2021 FA RC Event
 			</h3>
-			<h1
+			{/* <h1
 				style={{ marginTop: "0", cursor: "pointer", paddingTop: 0 }}
 				onClick={() =>
 					window.open(
@@ -277,8 +283,20 @@ const Main = () => {
 					)
 				}
 			>
-				Mental Health
-			</h1>
+				It's Okay
+			</h1> */}
+			<img
+				src={titleIMG}
+				style={{ padding: "10px" }}
+				alt="title"
+				width={windowDimensions.width > 700 ? "40%" : "80%"}
+				onClick={() =>
+					window.open(
+						"https://mental-health-rc2021f.web.app/",
+						"_self"
+					)
+				}
+			/>
 			<div style={{ marginBottom: "10px" }}>
 				{userAgent.includes("KAKAOTALK") ? (
 					<div style={{ marginTop: "3rem", marginBottom: "3rem" }}>
