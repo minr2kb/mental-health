@@ -81,7 +81,7 @@ const Write = () => {
 				return (
 					<Modal
 						width={windowDimensions.width > 700 ? "50vw" : "80vw"}
-						content="Do you agree to provide your information to **ONLY RC team** for the prize? // - If you select '**No**', we do not collect any of your login information(*Completely anounymous*). //- If you select '**Yes**', you may selected as winner and your writing may be discussed through the video later. (*Anounymous to students*)"
+						content="Do you agree to provide your information to **ONLY RC team** for the prize? // - If you select '**No**', we do not collect any of your login information(*Completely anounymous*). //- If you select '**Yes**', you may be selected as a winner and your story may be shared through the video later. (*Anounymous to students*)"
 						setIsOpen={setIsOpen}
 						isOpen={isOpen}
 						yes={() => {
@@ -133,13 +133,26 @@ const Write = () => {
 						}}
 					/>
 				);
+
+			case "warning":
+				return (
+					<Modal
+						width={windowDimensions.width > 700 ? "50vw" : "80vw"}
+						content=" Writer's information will **not be displayed** on the post. // - You can also write in **Korean**. // - You can **edit** or **delete** after posting. // - Please refrain from **swearing** and **slander** against others and **do not mention any names**."
+						setIsOpen={setIsOpen}
+						isOpen={isOpen}
+						okay={() => {
+							setIsOpen(false);
+						}}
+						inevitable={true}
+					/>
+				);
 		}
 	};
 
 	useEffect(() => {
-		// if (auth.currentUser?.email == undefined) {
-		// 	history.push("/");
-		// }
+		setModalMode("warning");
+		setIsOpen(true);
 		setWindowDimensions(getWindowDimensions());
 		function handleResize() {
 			setWindowDimensions(getWindowDimensions());

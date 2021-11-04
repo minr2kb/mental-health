@@ -180,7 +180,10 @@ const Main = () => {
 	useEffect(() => {
 		setUserAgent(navigator.userAgent);
 		console.log(navigator.userAgent);
-		if (navigator.userAgent.includes("KAKAOTALK")) {
+		if (
+			navigator.userAgent.includes("KAKAOTALK") ||
+			navigator.userAgent.includes("everytimeApp")
+		) {
 			window.alert(
 				"This browser is not supported. PLEASE open this page with Safari or Chrome."
 			);
@@ -202,79 +205,83 @@ const Main = () => {
 	}, [auth.currentUser]);
 
 	return (
-		<div className="App">
-			{isOpen && renderModal()}
-			{!userAgent.includes("KAKAOTALK") && isLoaded && (
-				<div
+		<>
+			{!userAgent.includes("KAKAOTALK") &&
+				!userAgent.includes("everytimeApp") &&
+				isLoaded && (
+					<div
+						style={{
+							display: "flex",
+							alignItems: "center",
+							justifyContent: "flex-end",
+							marginTop: "1rem",
+							width: "100%",
+						}}
+					>
+						<b>
+							{auth.currentUser?.displayName}
+							{auth.currentUser?.email
+								.split("@")[1]
+								.toLowerCase() == "sunykorea.ac.kr" &&
+								" (admin)"}
+						</b>
+						{isLoggedIn ? (
+							<div
+								style={{
+									// border: "solid 1px rgba(61, 61, 61, 0.5)",
+									borderRadius: "7px",
+									paddingLeft: "5px",
+									paddingRight: "10px",
+									paddingTop: "10px",
+									paddingBottom: "10px",
+									cursor: "pointer",
+
+									color: "rgb(35,196,144)",
+									width: "5rem",
+								}}
+								onClick={() => {
+									setModalMode("sign-out");
+									setIsOpen(true);
+								}}
+							>
+								Sign Out
+							</div>
+						) : (
+							<div
+								style={{
+									borderRadius: "7px",
+									paddingLeft: "10px",
+									paddingRight: "10px",
+									paddingTop: "10px",
+									paddingBottom: "10px",
+									cursor: "pointer",
+
+									color: "rgb(35,196,144)",
+									width: "5rem",
+								}}
+								onClick={() => {
+									setModalMode("sign-in");
+									setIsOpen(true);
+								}}
+							>
+								Sign In
+							</div>
+						)}
+					</div>
+				)}
+			<div className="App">
+				{isOpen && renderModal()}
+				<h3
 					style={{
-						display: "flex",
-						alignItems: "center",
-						justifyContent: "flex-end",
-						marginTop: "1rem",
-						width: "100%",
+						// marginTop: "2rem",
+						marginBottom: 0,
+						cursor: "pointer",
+						// color: "rgb(100,100,100)",
 					}}
 				>
-					<b>
-						{auth.currentUser?.displayName}
-						{auth.currentUser?.email.split("@")[1].toLowerCase() ==
-							"sunykorea.ac.kr" && " (admin)"}
-					</b>
-					{isLoggedIn ? (
-						<div
-							style={{
-								// border: "solid 1px rgba(61, 61, 61, 0.5)",
-								borderRadius: "7px",
-								paddingLeft: "5px",
-								// paddingRight: "15px",
-								paddingTop: "10px",
-								paddingBottom: "10px",
-								cursor: "pointer",
-
-								color: "rgb(35,196,144)",
-								width: "5rem",
-							}}
-							onClick={() => {
-								setModalMode("sign-out");
-								setIsOpen(true);
-							}}
-						>
-							Sign Out
-						</div>
-					) : (
-						<div
-							style={{
-								borderRadius: "7px",
-								paddingLeft: "10px",
-								// paddingRight: "15px",
-								paddingTop: "10px",
-								paddingBottom: "10px",
-								cursor: "pointer",
-
-								color: "rgb(35,196,144)",
-								width: "5rem",
-							}}
-							onClick={() => {
-								setModalMode("sign-in");
-								setIsOpen(true);
-							}}
-						>
-							Sign In
-						</div>
-					)}
-				</div>
-			)}
-
-			<h3
-				style={{
-					// marginTop: "2rem",
-					marginBottom: 0,
-					cursor: "pointer",
-					// color: "rgb(100,100,100)",
-				}}
-			>
-				2021 FA RC Event
-			</h3>
-			{/* <h1
+					2021 FA RC Event
+				</h3>
+				{/* <h1
 				style={{ marginTop: "0", cursor: "pointer", paddingTop: 0 }}
 				onClick={() =>
 					window.open(
@@ -285,240 +292,252 @@ const Main = () => {
 			>
 				It's Okay
 			</h1> */}
-			<img
-				src={titleIMG}
-				style={{ padding: "10px" }}
-				alt="title"
-				width={windowDimensions.width > 700 ? "40%" : "80%"}
-				onClick={() =>
-					window.open(
-						"https://mental-health-rc2021f.web.app/",
-						"_self"
-					)
-				}
-			/>
-			<div style={{ marginBottom: "10px" }}>
-				{userAgent.includes("KAKAOTALK") ? (
-					<div style={{ marginTop: "3rem", marginBottom: "3rem" }}>
+				<img
+					src={titleIMG}
+					style={{ padding: "10px" }}
+					alt="title"
+					width={windowDimensions.width > 700 ? "40%" : "80%"}
+					onClick={() =>
+						window.open(
+							"https://mental-health-rc2021f.web.app/",
+							"_self"
+						)
+					}
+				/>
+				<div style={{ marginBottom: "10px" }}>
+					{userAgent.includes("KAKAOTALK") ||
+					userAgent.includes("everytimeApp") ? (
 						<div
-							style={{
-								fontSize: "large",
-								fontWeight: "400",
-								margin: "10px",
-							}}
+							style={{ marginTop: "3rem", marginBottom: "3rem" }}
 						>
-							[Browse not Supported]
-							<p>Please open this page with Safari or Chrome.</p>
-						</div>
-						<>
 							<div
 								style={{
-									marginTop: "10px",
-									display: "flex",
-									flexDirection:
-										windowDimensions.width <= 700 &&
-										"column",
-									alignContent: "center",
-									justifyContent: "center",
-									alignItems: "center",
+									fontSize: "large",
+									fontWeight: "400",
+									margin: "10px",
 								}}
 							>
-								<input
-									className="input"
+								[Browse not Supported]
+								<p>
+									Please open this page with Safari or Chrome.
+								</p>
+							</div>
+							<>
+								<div
 									style={{
-										width:
-											windowDimensions.width > 700
-												? "40vw"
-												: "90vw",
+										marginTop: "10px",
+										display: "flex",
+										flexDirection:
+											windowDimensions.width <= 700 &&
+											"column",
+										alignContent: "center",
+										justifyContent: "center",
+										alignItems: "center",
 									}}
-									type="text"
-									value="https://mental-health-rc2021f.web.app/"
-									ref={linkInput}
-									readOnly
-								></input>
+								>
+									<input
+										className="input"
+										style={{
+											width:
+												windowDimensions.width > 700
+													? "40vw"
+													: "90vw",
+										}}
+										type="text"
+										value="https://mental-health-rc2021f.web.app/"
+										ref={linkInput}
+										readOnly
+									></input>
+									<div
+										style={{
+											borderRadius: "7px",
+											paddingLeft: "20px",
+											paddingRight: "20px",
+											paddingTop: "10px",
+											paddingBottom: "10px",
+											marginLeft: "5px",
+											cursor: "pointer",
+											backgroundColor: "rgb(35,196,144)",
+											boxShadow:
+												"rgba(35,196,144, 0.2) 0px 0px 10px 5px",
+											// width:
+											// 	windowDimensions.width > 700 &&
+											// 	"fit-content",
+											margin: "10px",
+
+											color: "white",
+										}}
+										onClick={copy}
+									>
+										{copied ? "Copied!" : "Copy"}
+									</div>
+								</div>
+
+								{copied ? (
+									<div style={{ color: "green" }}>
+										Copied!
+									</div>
+								) : null}
+							</>
+						</div>
+					) : isLoaded ? (
+						<div ref={scrollRef}>
+							{Object.keys(posts).map(
+								(key, idx) =>
+									(page - 1) * itemsPerPage <= idx &&
+									idx < page * itemsPerPage && (
+										<Link
+											to={`/posts/${key}`}
+											style={{
+												textDecoration: "none",
+												color: "inherit",
+											}}
+											key={key}
+										>
+											<div
+												className="chat-box"
+												style={{
+													display: "flex",
+													justifyContent:
+														"space-between",
+													alignItems: "center",
+													width:
+														windowDimensions.width >
+														700
+															? "60vw"
+															: "85vw",
+												}}
+											>
+												<div
+													style={{
+														padding: "3px",
+													}}
+												>
+													<div
+														style={{
+															fontSize: "smaller",
+															marginBottom: "5px",
+														}}
+													>
+														{posts[key].timestamp}
+													</div>
+													<div
+														style={{
+															fontSize: "large",
+															fontWeight: "500",
+														}}
+													>
+														{posts[key].title}
+													</div>
+												</div>
+												<div
+													style={{
+														fontSize: "smaller",
+														display: "flex",
+														flexDirection:
+															windowDimensions.width <=
+																700 && "column",
+														alignItems: "center",
+														justifyItems: "center",
+														padding: "3px",
+													}}
+												>
+													<AiFillHeart color="coral" />
+
+													<span
+														style={{
+															marginLeft:
+																windowDimensions.width >
+																	700 &&
+																"2px",
+														}}
+													>
+														{
+															posts[key]
+																.likedusers
+																.length
+														}
+													</span>
+												</div>
+											</div>
+										</Link>
+									)
+							)}
+							<div
+								style={{
+									display: "flex",
+									width: "100%",
+									justifyContent: "flex-end",
+
+									paddingTop: "20px",
+								}}
+							>
 								<div
 									style={{
 										borderRadius: "7px",
 										paddingLeft: "20px",
-										paddingRight: "20px",
+										paddingRight: "15px",
 										paddingTop: "10px",
 										paddingBottom: "10px",
-										marginLeft: "5px",
 										cursor: "pointer",
 										backgroundColor: "rgb(35,196,144)",
 										boxShadow:
 											"rgba(35,196,144, 0.2) 0px 0px 10px 5px",
-										// width:
-										// 	windowDimensions.width > 700 &&
-										// 	"fit-content",
-										margin: "10px",
 
 										color: "white",
 									}}
-									onClick={copy}
+									onClick={() => {
+										if (!isLoggedIn) {
+											setModalMode("new-post");
+											setIsOpen(true);
+										} else {
+											history.push("/write");
+										}
+									}}
 								>
-									{copied ? "Copied!" : "Copy"}
+									New +
 								</div>
 							</div>
-
-							{copied ? (
-								<div style={{ color: "green" }}>Copied!</div>
-							) : null}
-						</>
-					</div>
-				) : isLoaded ? (
-					<div ref={scrollRef}>
-						{Object.keys(posts).map(
-							(key, idx) =>
-								(page - 1) * itemsPerPage <= idx &&
-								idx < page * itemsPerPage && (
-									<Link
-										to={`/posts/${key}`}
-										style={{
-											textDecoration: "none",
-											color: "inherit",
-										}}
-										key={key}
-									>
-										<div
-											className="chat-box"
-											style={{
-												display: "flex",
-												justifyContent: "space-between",
-												alignItems: "center",
-												width:
-													windowDimensions.width > 700
-														? "60vw"
-														: "85vw",
-											}}
-										>
-											<div
-												style={{
-													padding: "3px",
-												}}
-											>
-												<div
-													style={{
-														fontSize: "smaller",
-														marginBottom: "5px",
-													}}
-												>
-													{posts[key].timestamp}
-												</div>
-												<div
-													style={{
-														fontSize: "large",
-														fontWeight: "500",
-													}}
-												>
-													{posts[key].title}
-												</div>
-											</div>
-											<div
-												style={{
-													fontSize: "smaller",
-													display: "flex",
-													flexDirection:
-														windowDimensions.width <=
-															700 && "column",
-													alignItems: "center",
-													justifyItems: "center",
-													padding: "3px",
-												}}
-											>
-												<AiFillHeart color="coral" />
-
-												<span
-													style={{
-														marginLeft:
-															windowDimensions.width >
-																700 && "2px",
-													}}
-												>
-													{
-														posts[key].likedusers
-															.length
-													}
-												</span>
-											</div>
-										</div>
-									</Link>
-								)
-						)}
-						<div
-							style={{
-								display: "flex",
-								width: "100%",
-								justifyContent: "flex-end",
-
-								paddingTop: "20px",
-							}}
-						>
-							<div
+							<Pagination
+								activePage={page}
+								itemsCountPerPage={itemsPerPage}
+								totalItemsCount={Object.keys(posts).length}
+								pageRangeDisplayed={5}
+								prevPageText={"‹"}
+								nextPageText={"›"}
+								onChange={handlePageChange}
+							/>
+							{/* <div>{auth.currentUser?.email}</div> */}
+							{/* <div
 								style={{
-									borderRadius: "7px",
-									paddingLeft: "20px",
-									paddingRight: "15px",
-									paddingTop: "10px",
-									paddingBottom: "10px",
-									cursor: "pointer",
-									backgroundColor: "rgb(35,196,144)",
-									boxShadow:
-										"rgba(35,196,144, 0.2) 0px 0px 10px 5px",
-
-									color: "white",
-								}}
-								onClick={() => {
-									if (!isLoggedIn) {
-										setModalMode("new-post");
-										setIsOpen(true);
-									} else {
-										history.push("/write");
-									}
+									marginBottom: "30px",
+									overflowWrap: "anywhere",
+									width: "50vw",
 								}}
 							>
-								New +
-							</div>
+								{userAgent}
+							</div> */}
 						</div>
-						<Pagination
-							activePage={page}
-							itemsCountPerPage={itemsPerPage}
-							totalItemsCount={Object.keys(posts).length}
-							pageRangeDisplayed={5}
-							prevPageText={"‹"}
-							nextPageText={"›"}
-							onChange={handlePageChange}
-						/>
-						{/* <div>{auth.currentUser?.email}</div> */}
-						{/* <div
-							style={{
-								marginBottom: "30px",
-								overflowWrap: "anywhere",
-								width: "50vw",
-							}}
-						>
-							{userAgent}
-						</div> */}
-					</div>
-				) : (
-					<div style={{ padding: "2rem" }}>
-						<HashLoader color="#23C490" size={30} />
-					</div>
-				)}
-			</div>
-			<footer>
-				<div
-					style={{
-						textAlign: "center",
-						fontSize: "smaller",
-						color: "rgba(100, 100, 100, 0.5)",
-						paddingBottom: "30px",
-					}}
-				>
-					© 2021. (Kyungbae Min) all rights reserved
+					) : (
+						<div style={{ padding: "2rem" }}>
+							<HashLoader color="#23C490" size={30} />
+						</div>
+					)}
 				</div>
-			</footer>
-		</div>
+				<footer>
+					<div
+						style={{
+							textAlign: "center",
+							fontSize: "smaller",
+							color: "rgba(100, 100, 100, 0.5)",
+							paddingBottom: "30px",
+						}}
+					>
+						© 2021. (Kyungbae Min) all rights reserved
+					</div>
+				</footer>
+			</div>
+		</>
 	);
 };
 
